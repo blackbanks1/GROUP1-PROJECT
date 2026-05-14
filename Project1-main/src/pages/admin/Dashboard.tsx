@@ -14,7 +14,12 @@ import {
   AlertCircle,
   Info,
   ShieldAlert,
-  CheckCircle2
+  CheckCircle2,
+  Calendar,
+  Clock,
+  Video,
+  MapPin,
+  Plus
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -33,6 +38,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { MOCK_LECTURES } from '@/mocks';
 
 const data = [
   { name: 'Jan', students: 4000, companies: 2400 },
@@ -242,6 +249,93 @@ export default function AdminDashboard() {
                </div>
             </CardContent>
          </Card>
+      </div>
+
+      {/* Simplified Lecture Management */}
+      <div className="space-y-6 pb-12">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Lecture Management</h2>
+            <p className="text-sm text-slate-500">Overview of all scheduled academic sessions across the platform.</p>
+          </div>
+          <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-10 px-4 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border-none">
+            <Plus className="w-4 h-4" /> Create Lecture
+          </Button>
+        </div>
+
+        <Card className="glass border-slate-200/50 shadow-xl overflow-hidden">
+          <Table>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow className="border-slate-100">
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Lecture Title</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Lecturer</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Schedule</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Location</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Status</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {MOCK_LECTURES.map((lecture) => (
+                <TableRow key={lecture.id} className="border-slate-100 hover:bg-slate-50/50 transition-colors">
+                  <TableCell className="py-4 px-6">
+                    <p className="font-bold text-slate-900">{lecture.title}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{lecture.studentsCount} Students Enrolled</p>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-6 h-6 border border-slate-200">
+                        <AvatarFallback className="text-[8px] font-bold">L</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs font-medium text-slate-600">Lecturer ID: {lecture.lecturerId}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Calendar className="w-3 h-3 text-slate-400" />
+                        <span className="text-[10px] font-bold">{lecture.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        <span className="text-[10px] font-bold">{lecture.time}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex items-center gap-1.5">
+                      {lecture.location.includes('Zoom') || lecture.location.includes('Online') ? (
+                        <Video className="w-3.5 h-3.5 text-accent-blue" />
+                      ) : (
+                        <MapPin className="w-3.5 h-3.5 text-accent-pink" />
+                      )}
+                      <span className="text-xs font-medium text-slate-600">{lecture.location}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <Badge className={`text-[9px] font-bold uppercase tracking-widest border-none px-2 py-1 ${
+                      lecture.status === 'upcoming' ? 'bg-primary-50 text-primary-600' : 
+                      lecture.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 
+                      'bg-slate-100 text-slate-500'
+                    }`}>
+                      {lecture.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-4 px-6 text-right">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-900">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="p-4 border-t border-slate-100 bg-slate-50/20 text-center">
+            <Button variant="link" className="text-[10px] font-bold text-primary-600 uppercase tracking-widest">
+              View Full Lecture Audit
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );
