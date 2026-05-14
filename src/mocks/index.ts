@@ -1,4 +1,4 @@
-import { User, Internship, Post } from '../types';
+import { User, Internship, Post, Lecture } from '../types';
 
 export const MOCK_USERS: User[] = [
   {
@@ -84,5 +84,41 @@ export const MOCK_POSTS: Post[] = [
     likes: 120,
     comments: 18,
     createdAt: '2024-05-12T15:30:00Z',
+  },
+];
+
+export const MOCK_LECTURES: Lecture[] = [
+  {
+    id: 'lct1',
+    title: 'Advanced Web Architectures',
+    lecturerId: 'l1',
+    date: '2024-05-20',
+    time: '10:00 AM',
+    location: 'Room 302 / Zoom',
+    description: 'Deep dive into microservices and serverless computing.',
+    status: 'upcoming',
+    studentsCount: 45,
+  },
+  {
+    id: 'lct2',
+    title: 'Professional Ethics in Tech',
+    lecturerId: 'l1',
+    date: '2024-05-22',
+    time: '02:00 PM',
+    location: 'Auditorium A',
+    description: 'Exploring the ethical implications of AI and big data.',
+    status: 'upcoming',
+    studentsCount: 120,
+  },
+  {
+    id: 'lct3',
+    title: 'Career Workshop: Interviews',
+    lecturerId: 'l1',
+    date: '2024-05-15',
+    time: '11:00 AM',
+    location: 'Online',
+    description: 'Practical tips for acing technical interviews.',
+    status: 'completed',
+    studentsCount: 85,
   },
 ];

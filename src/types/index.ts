@@ -55,3 +55,15 @@ export interface Post {
   comments: number;
   createdAt: string;
 }
+
+export interface Lecture {
+  id: string;
+  title: string;
+  lecturerId: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  status: 'upcoming' | 'completed' | 'cancelled';
+  studentsCount: number;
+}

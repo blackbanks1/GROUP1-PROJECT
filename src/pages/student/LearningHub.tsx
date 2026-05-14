@@ -134,7 +134,7 @@ export default function LearningHub() {
                animate={{ opacity: 1, scale: 1 }}
                transition={{ delay: idx * 0.1 }}
              >
-               <Card className="bg-white border-none group hover:shadow-2xl hover:shadow-primary-600/10 transition-all overflow-hidden cursor-pointer h-full flex flex-col shadow-sm rounded-[2.5rem] relative">
+               <Card className="bg-white border-none group hover:shadow-2xl hover:shadow-primary-600/10 transition-all duration-500 overflow-hidden cursor-pointer h-full flex flex-col shadow-sm rounded-[2.5rem] relative hover:-translate-y-2">
                   <div className="aspect-video relative overflow-hidden text-white m-4 rounded-[2rem]">
                      <img 
                        src={course.image} 
@@ -142,10 +142,10 @@ export default function LearningHub() {
                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                      />
                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-80" />
-                     <div className="absolute top-4 right-4 h-12 w-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center text-white/60 hover:text-white hover:bg-primary-600 transition-all">
+                     <div className="absolute top-4 right-4 h-12 w-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center text-white/60 hover:text-white hover:bg-primary-600 transition-all duration-300">
                         <Bookmark className="w-5 h-5" />
                      </div>
-                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500 border-4 border-white/20">
                            <Play className="w-6 h-6 fill-current" />
                         </div>
@@ -153,23 +153,23 @@ export default function LearningHub() {
                   </div>
                   <CardContent className="px-8 pb-8 flex-1 flex flex-col">
                      <div className="flex items-center justify-between mb-6">
-                        <Badge className="bg-primary-50 text-primary-600 border border-primary-100 font-black text-[9px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg shadow-sm">
+                        <Badge className="bg-primary-50 text-primary-600 border border-primary-100 font-black text-[9px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
                            {course.category}
                         </Badge>
-                        <div className="flex items-center gap-1.5 text-yellow-500 font-bold text-xs bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-100">
+                        <div className="flex items-center gap-1.5 text-yellow-500 font-bold text-xs bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-100 group-hover:rotate-3 transition-transform">
                            <Star className="w-3.5 h-3.5 fill-current" /> {course.rating}
                         </div>
                      </div>
-                     <h4 className="font-bold text-2xl mb-4 text-slate-950 group-hover:text-primary-600 transition-colors leading-tight italic uppercase font-display">
+                     <h4 className="font-bold text-2xl mb-4 text-slate-950 group-hover:text-primary-600 transition-colors duration-300 leading-tight italic uppercase font-display">
                         {course.title}
                      </h4>
-                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-10 font-display italic">{course.instructor}</p>
+                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-10 font-display italic group-hover:text-slate-600 transition-colors">{course.instructor}</p>
                      
                      <div className="mt-auto flex items-center justify-between pt-8 border-t border-slate-50">
-                        <div className="flex items-center gap-2 text-slate-300 font-black text-[9px] uppercase tracking-[0.2em]">
+                        <div className="flex items-center gap-2 text-slate-300 font-black text-[9px] uppercase tracking-[0.2em] group-hover:text-slate-500 transition-colors">
                            <Clock className="w-4 h-4 text-primary-600/50" /> {course.duration}
                         </div>
-                        <Button variant="ghost" className="h-10 px-6 text-primary-600 hover:text-white hover:bg-primary-600 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-sm">
+                        <Button variant="ghost" className="h-10 px-6 text-primary-600 hover:text-white hover:bg-primary-600 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 shadow-sm active:scale-90">
                            Resume <ArrowRight className="w-3.5 h-3.5 ml-2" />
                         </Button>
                      </div>

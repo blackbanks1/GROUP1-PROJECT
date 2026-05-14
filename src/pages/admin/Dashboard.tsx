@@ -14,7 +14,12 @@ import {
   AlertCircle,
   Info,
   ShieldAlert,
-  CheckCircle2
+  CheckCircle2,
+  Calendar,
+  Clock,
+  Video,
+  MapPin,
+  Plus
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -33,6 +38,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { MOCK_LECTURES } from '@/mocks';
 
 const data = [
   { name: 'Jan', students: 4000, companies: 2400 },
@@ -66,10 +73,10 @@ export default function AdminDashboard() {
           <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">Full platform oversight and administrative control center.</p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-slate-200 text-slate-400 rounded-2xl h-16 px-10 font-bold text-xs uppercase tracking-widest transition-all bg-white shadow-sm">
+          <Button variant="outline" className="border-slate-200 text-slate-400 rounded-2xl h-16 px-10 font-bold text-xs uppercase tracking-widest transition-all bg-white shadow-sm hover:bg-slate-50 hover:border-primary-500 hover:text-primary-600">
             Audit Logs
           </Button>
-          <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-2xl h-16 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary-600/10 transition-all hover:scale-105 border-none">
+          <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-2xl h-16 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary-600/10 transition-all hover:scale-105 border-none active:scale-95">
             Platform Settings
           </Button>
         </div>
@@ -85,7 +92,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Growth Chart */}
-        <Card className="lg:col-span-2 glass border-slate-200/50 overflow-hidden shadow-xl">
+        <Card className="lg:col-span-2 glass border-slate-200/50 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
           <CardHeader className="p-8 border-b border-slate-100 flex flex-row items-center justify-between bg-slate-50/20">
              <h3 className="text-xl font-bold font-display tracking-tight text-slate-900">Registration Growth</h3>
              <div className="flex gap-6">
@@ -131,7 +138,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* User Distribution */}
-        <Card className="glass border-slate-200/50 overflow-hidden shadow-xl relative">
+        <Card className="glass border-slate-200/50 overflow-hidden shadow-xl relative hover:shadow-2xl transition-all duration-500">
           <CardHeader className="p-8 border-b border-slate-100 bg-slate-50/20">
             <h3 className="text-xl font-bold font-display tracking-tight text-slate-900">User Distribution</h3>
           </CardHeader>
@@ -149,7 +156,7 @@ export default function AdminDashboard() {
                   stroke="none"
                 >
                   {PIE_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} className="focus:outline-none shadow-sm" />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} className="focus:outline-none shadow-sm cursor-pointer" />
                   ))}
                 </Pie>
                 <Tooltip 
@@ -167,13 +174,13 @@ export default function AdminDashboard() {
 
       {/* System Health / Pending Tasks */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-         <Card className="glass border-slate-200/50 shadow-xl overflow-hidden">
+         <Card className="glass border-slate-200/50 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500">
             <CardHeader className="p-6 border-b border-slate-100 flex flex-row items-center justify-between bg-slate-50/20">
               <h3 className="text-lg font-bold font-display tracking-tight flex items-center gap-3 text-slate-900">
                 <ShieldCheck className="w-5 h-5 text-accent-pink" />
                 Security OverSight
               </h3>
-              <Badge variant="outline" className="text-accent-pink border-accent-pink/20 bg-accent-pink/5 font-bold text-[9px] uppercase tracking-widest">3 Alerts</Badge>
+              <Badge variant="outline" className="text-accent-pink border-accent-pink/20 bg-accent-pink/5 font-bold text-[9px] uppercase tracking-widest animate-pulse">3 Alerts</Badge>
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-slate-100">
@@ -183,9 +190,9 @@ export default function AdminDashboard() {
                     { msg: 'System update available: v2.4.1', level: 'Info', time: '5h ago', icon: Info, color: 'text-accent-blue' },
                   ].map((alert, idx) => (
                     <div key={idx} className="p-6 flex items-center gap-4 hover:bg-slate-50 transition-colors cursor-pointer group">
-                       <alert.icon className={`w-6 h-6 ${alert.color} opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all`} />
+                       <alert.icon className={`w-6 h-6 ${alert.color} opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300`} />
                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium tracking-tight truncate text-slate-900">{alert.msg}</p>
+                          <p className="text-sm font-medium tracking-tight truncate text-slate-900 group-hover:text-primary-600 transition-colors">{alert.msg}</p>
                           <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest mt-1">{alert.time} &bull; {alert.level} Priority</p>
                        </div>
                     </div>
@@ -199,13 +206,13 @@ export default function AdminDashboard() {
             </CardContent>
          </Card>
 
-         <Card className="glass border-slate-200/50 shadow-xl overflow-hidden">
+         <Card className="glass border-slate-200/50 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500">
             <CardHeader className="p-6 border-b border-slate-100 flex flex-row items-center justify-between bg-slate-50/20">
               <h3 className="text-lg font-bold font-display tracking-tight flex items-center gap-3 text-slate-900">
                 <UserPlus className="w-5 h-5 text-accent-blue" />
                 Pending Verification
               </h3>
-              <Button variant="link" size="sm" className="text-primary-600 font-bold uppercase tracking-widest text-[10px] italic">Review All</Button>
+              <Button variant="link" size="sm" className="text-primary-600 font-bold uppercase tracking-widest text-[10px] italic hover:scale-105 transition-transform">Review All</Button>
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-slate-100">
@@ -216,19 +223,19 @@ export default function AdminDashboard() {
                   ].map((pending, idx) => (
                     <div key={idx} className="p-5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                        <div className="flex items-center gap-4 overflow-hidden">
-                          <Avatar className="w-11 h-11 border border-slate-200 group-hover:border-primary-500/50 group-hover:scale-105 transition-all">
+                          <Avatar className="w-11 h-11 border border-slate-200 group-hover:border-primary-500/50 group-hover:scale-105 transition-all duration-300">
                              <AvatarFallback className="bg-primary-50 text-primary-700 font-bold text-sm">{pending.name[0]}</AvatarFallback>
                           </Avatar>
                           <div className="min-w-0 overflow-hidden">
-                             <p className="text-sm font-bold tracking-tight truncate text-slate-900">{pending.name}</p>
+                             <p className="text-sm font-bold tracking-tight truncate text-slate-900 group-hover:text-primary-600 transition-colors">{pending.name}</p>
                              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest mt-0.5 truncate">{pending.type} &bull; {pending.date}</p>
                           </div>
                        </div>
-                       <div className="flex gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all">
-                          <Button size="icon" variant="ghost" className="text-accent-green hover:bg-accent-green/10 w-8 h-8 rounded-full border border-slate-200 group-hover:border-accent-green/20">
+                       <div className="flex gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+                          <Button size="icon" variant="ghost" className="text-accent-green hover:bg-accent-green/10 w-8 h-8 rounded-full border border-slate-200 group-hover:border-accent-green/20 active:scale-90">
                             <CheckCircle2 className="w-4 h-4" />
                           </Button>
-                          <Button size="icon" variant="ghost" className="text-accent-pink hover:bg-accent-pink/10 w-8 h-8 rounded-full border border-slate-200 group-hover:border-accent-pink/20">
+                          <Button size="icon" variant="ghost" className="text-accent-pink hover:bg-accent-pink/10 w-8 h-8 rounded-full border border-slate-200 group-hover:border-accent-pink/20 active:scale-90">
                             <ShieldAlert className="w-4 h-4" />
                           </Button>
                        </div>
@@ -243,20 +250,107 @@ export default function AdminDashboard() {
             </CardContent>
          </Card>
       </div>
+
+      {/* Simplified Lecture Management */}
+      <div className="space-y-6 pb-12">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Lecture Management</h2>
+            <p className="text-sm text-slate-500">Overview of all scheduled academic sessions across the platform.</p>
+          </div>
+          <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-10 px-4 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 border-none active:scale-95 transition-all">
+            <Plus className="w-4 h-4" /> Create Lecture
+          </Button>
+        </div>
+
+        <Card className="glass border-slate-200/50 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500">
+          <Table>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow className="border-slate-100">
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Lecture Title</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Lecturer</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Schedule</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Location</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Status</TableHead>
+                <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {MOCK_LECTURES.map((lecture) => (
+                <TableRow key={lecture.id} className="border-slate-100 hover:bg-primary-50/30 transition-all duration-300 group/row cursor-pointer">
+                  <TableCell className="py-4 px-6">
+                    <p className="font-bold text-slate-900 group-hover/row:text-primary-600 transition-colors">{lecture.title}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{lecture.studentsCount} Students Enrolled</p>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex items-center gap-2 group-hover/row:translate-x-1 transition-transform">
+                      <Avatar className="w-6 h-6 border border-slate-200">
+                        <AvatarFallback className="text-[8px] font-bold">L</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs font-medium text-slate-600">Lecturer ID: {lecture.lecturerId}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex flex-col gap-1 group-hover/row:translate-x-1 transition-transform">
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Calendar className="w-3 h-3 text-slate-400" />
+                        <span className="text-[10px] font-bold">{lecture.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-600">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        <span className="text-[10px] font-bold">{lecture.time}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex items-center gap-1.5 group-hover/row:translate-x-1 transition-transform">
+                      {lecture.location.includes('Zoom') || lecture.location.includes('Online') ? (
+                        <Video className="w-3.5 h-3.5 text-accent-blue" />
+                      ) : (
+                        <MapPin className="w-3.5 h-3.5 text-accent-pink" />
+                      )}
+                      <span className="text-xs font-medium text-slate-600">{lecture.location}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <Badge className={`text-[9px] font-bold uppercase tracking-widest border-none px-2 py-1 transition-all duration-300 group-hover/row:scale-110 ${
+                      lecture.status === 'upcoming' ? 'bg-primary-50 text-primary-600' : 
+                      lecture.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 
+                      'bg-slate-100 text-slate-500'
+                    }`}>
+                      {lecture.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-4 px-6 text-right">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-900 group-hover/row:rotate-90 transition-all">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="p-4 border-t border-slate-100 bg-slate-50/20 text-center">
+            <Button variant="link" className="text-[10px] font-bold text-primary-600 uppercase tracking-widest hover:scale-105 transition-transform">
+              View Full Lecture Audit
+            </Button>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
 
 function StatCard({ icon, label, value, subtext, accent }: { icon: React.ReactNode; label: string; value: string; subtext: string; accent: string }) {
   return (
-    <Card className="bg-white border-none transition-all group overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-600/5 p-10 rounded-[2.5rem] relative">
-      <div className={`absolute top-0 left-0 w-full h-1.5 ${accent} opacity-20`} />
+    <Card className="bg-white border-none transition-all duration-500 group overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary-600/10 p-10 rounded-[2.5rem] relative hover:-translate-y-2 cursor-pointer">
+      <div className={`absolute top-0 left-0 w-full h-1.5 ${accent} opacity-20 group-hover:opacity-100 transition-opacity duration-500`} />
       <div className="flex items-center gap-6 mb-6 relative z-10">
-        <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">{icon}</div>
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic font-display">{label}</span>
+        <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white group-hover:rotate-12 transition-all duration-500 shadow-sm">{icon}</div>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic font-display group-hover:text-slate-600 transition-colors">{label}</span>
       </div>
       <div className="relative z-10">
-        <h3 className="text-5xl font-bold tracking-tighter mb-2 font-display italic text-slate-950 leading-none">{value}</h3>
+        <h3 className="text-5xl font-bold tracking-tighter mb-2 font-display italic text-slate-950 leading-none group-hover:scale-105 origin-left transition-transform duration-500">{value}</h3>
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{subtext}</p>
       </div>
     </Card>

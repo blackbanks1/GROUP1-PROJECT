@@ -183,14 +183,14 @@ export default function LecturerDashboard() {
 
 function StatCard({ icon, label, value, subtext, accent }: { icon: React.ReactNode; label: string; value: string; subtext: string; accent: string }) {
   return (
-    <Card className="bg-white border-none transition-all group overflow-hidden shadow-sm hover:shadow-xl hover:shadow-violet-600/5 p-10 rounded-[2.5rem] relative">
-      <div className={`absolute top-0 left-0 w-full h-1.5 ${accent} opacity-20`} />
+    <Card className="bg-white border-none transition-all duration-500 group overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary-600/10 p-10 rounded-[2.5rem] relative hover:-translate-y-2 cursor-pointer">
+      <div className={`absolute top-0 left-0 w-full h-1.5 ${accent} opacity-20 group-hover:opacity-100 transition-opacity duration-500`} />
       <div className="flex items-center gap-6 mb-6 relative z-10">
-        <div className="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-all shadow-sm">{icon}</div>
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic font-display">{label}</span>
+        <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white group-hover:rotate-12 transition-all duration-500 shadow-sm">{icon}</div>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic font-display group-hover:text-slate-600 transition-colors">{label}</span>
       </div>
       <div className="relative z-10">
-        <h3 className="text-5xl font-bold tracking-tighter mb-2 font-display italic text-slate-950 leading-none">{value}</h3>
+        <h3 className="text-5xl font-bold tracking-tighter mb-2 font-display italic text-slate-950 leading-none group-hover:scale-105 origin-left transition-transform duration-500">{value}</h3>
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{subtext}</p>
       </div>
     </Card>
