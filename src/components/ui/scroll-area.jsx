@@ -7,7 +7,7 @@ function ScrollArea({
   className,
   children,
   ...props
-}.Root.Props) {
+}) {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
@@ -30,7 +30,7 @@ function ScrollBar({
   className,
   orientation = "vertical",
   ...props
-}.Scrollbar.Props) {
+}) {
   return (
     <ScrollAreaPrimitive.Scrollbar
       data-slot="scroll-area-scrollbar"

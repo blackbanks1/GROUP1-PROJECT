@@ -8,7 +8,7 @@ function Separator({
   className,
   orientation = "horizontal",
   ...props
-}.Props) {
+}) {
   return (
     <SeparatorPrimitive
       data-slot="separator"

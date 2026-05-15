@@ -9,7 +9,7 @@ function Tabs({
   className,
   orientation = "horizontal",
   ...props
-}.Root.Props) {
+}) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
@@ -42,7 +42,7 @@ function TabsList({
   className,
   variant = "default",
   ...props
-}.List.Props & VariantProps<typeof tabsListVariants>) {
+}) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
@@ -53,7 +53,7 @@ function TabsList({
   )
 }
 
-function TabsTrigger({ className, ...props }.Tab.Props) {
+function TabsTrigger({ className, ...props }) {
   return (
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
@@ -69,7 +69,7 @@ function TabsTrigger({ className, ...props }.Tab.Props) {
   )
 }
 
-function TabsContent({ className, ...props }.Panel.Props) {
+function TabsContent({ className, ...props }) {
   return (
     <TabsPrimitive.Panel
       data-slot="tabs-content"

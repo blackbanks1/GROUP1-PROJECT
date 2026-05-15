@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Label({ className, ...props }.ComponentProps<"label">) {
+function Label({ className, ...props }) {
   return (
     <label
       data-slot="label"

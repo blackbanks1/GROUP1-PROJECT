@@ -21,9 +21,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-
-
-
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState('role');
@@ -38,7 +35,7 @@ export default function RegisterPage() {
   ];
 
   const handleNextStep = () => {
-    if (step === 'role' && selectedRole) {
+    if (step === 'role' && !selectedRole) {
       toast.error('Please select a role to continue');
       return;
     }
@@ -265,7 +262,7 @@ export default function RegisterPage() {
                     </motion.div>
                     <motion.div 
                       animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-                      transition={{ duration: 2, repeat }}
+                      transition={{ duration: 2, repeat: Infinity }}
                       className="absolute inset-0 bg-primary-600/20 rounded-full blur-3xl -z-10" 
                     />
                  </div>
@@ -296,7 +293,7 @@ export default function RegisterPage() {
           </AnimatePresence>
         </div>
 
-        {step == 'complete' && (
+        {step !== 'complete' && (
           <p className="text-center mt-12 text-slate-300 text-sm font-medium">
               By joining, you agree to our <a href="#" className="text-slate-500 hover:text-slate-900 font-bold underline underline-offset-4">Terms</a> and <a href="#" className="text-slate-500 hover:text-slate-900 font-bold underline underline-offset-4">Privacy Policy</a>.
           </p>
