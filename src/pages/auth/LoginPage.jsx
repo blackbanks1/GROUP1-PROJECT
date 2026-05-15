@@ -26,7 +26,7 @@ export default function LoginPage() {
     }, 1000);
   };
 
-  const handleLogin = (e.FormEvent) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     if (email || password) {
       toast.error('Please enter your credentials');

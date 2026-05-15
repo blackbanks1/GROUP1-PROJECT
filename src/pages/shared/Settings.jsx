@@ -113,7 +113,7 @@ export default function Settings() {
   );
 }
 
-function PreferenceSwitch({ label, description, defaultChecked = false }: { label; description; defaultChecked? }) {
+function PreferenceSwitch({ label, description, defaultChecked = false }) {
   return (
     <div className="flex items-center justify-between group p-2 rounded-2xl hover:bg-slate-50/50 transition-all">
        <div className="space-y-1">

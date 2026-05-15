@@ -129,7 +129,7 @@ export default function InternshipTracker() {
   );
 }
 
-function InsightCard({ icon, label, value, sub }: { icon; label; value; sub }) {
+function InsightCard({ icon, label, value, sub }) {
   return (
     <Card className="bg-white border-slate-200 p-6 hover:bg-slate-50 transition-all group overflow-hidden relative shadow-sm">
        <div className="flex items-center gap-4">
@@ -146,7 +146,7 @@ function InsightCard({ icon, label, value, sub }: { icon; label; value; sub }) {
   );
 }
 
-function TimelineItem({ title, date, status }: { title; date; status }) {
+function TimelineItem({ title, date, status }) {
   return (
     <div className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors rounded-3xl group">
        <div className="flex items-center gap-4">
@@ -165,7 +165,7 @@ function TimelineItem({ title, date, status }: { title; date; status }) {
   );
 }
 
-function SupervisorCard({ name, role, feedback }: { name; role; feedback }) {
+function SupervisorCard({ name, role, feedback }) {
   return (
     <Card className="bg-white border-slate-200 p-8 hover:bg-slate-50 transition-all relative overflow-hidden group shadow-sm">
        <div className="absolute top-0 left-0 w-1 h-full bg-primary-600 opacity-20" />

@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { MOCK_USERS } from '@/mocks';
 
 export default function MessagingPage() {
-  const [selectedChat, setSelectedChat] = useState<string | null>(MOCK_USERS[1].id);
+  const [selectedChat, setSelectedChat] = useState(MOCK_USERS[1].id);
   const currentUser = MOCK_USERS[0];
   const activeChatUser = MOCK_USERS.find(u => u.id === selectedChat);
 
@@ -157,7 +157,7 @@ export default function MessagingPage() {
   );
 }
 
-function Message({ bubble, time, isOwn }: { bubble, time, isOwn }) {
+function Message({ bubble, time, isOwn }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10, scale: 0.95 }}

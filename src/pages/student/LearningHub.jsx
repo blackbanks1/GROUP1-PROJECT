@@ -226,7 +226,7 @@ export default function LearningHub() {
   );
 }
 
-function CategoryCard({ icon, label, active = false }: { icon.ReactNode; label; active? }) {
+function CategoryCard({ icon, label, active = false }) {
   return (
     <Card className={`bg-white border p-8 flex flex-col items-center justify-center gap-6 transition-all group cursor-pointer rounded-[2rem] shadow-sm relative overflow-hidden h-44 ${
       active ? 'border-primary-600 bg-primary-50/30' : 'border-slate-100 hover:border-primary-200 hover:shadow-xl hover:shadow-primary-600/5'

@@ -126,7 +126,7 @@ export default function MyApplications() {
   );
 }
 
-function StatusSummary({ label, count, color, textColor = 'text-slate-900' }: { label; count; color; textColor? }) {
+function StatusSummary({ label, count, color, textColor = 'text-slate-900' }) {
   return (
     <Card className={`bg-white border-slate-100 overflow-hidden relative shadow-sm hover:shadow-md transition-all rounded-[2rem] border-none group`}>
       <div className={`absolute top-0 left-0 w-full h-1.5 ${color}`} />
@@ -138,7 +138,7 @@ function StatusSummary({ label, count, color, textColor = 'text-slate-900' }: { 
   );
 }
 
-function ApplicationCard({ app, index }: { app; index; key?.Key }) {
+function ApplicationCard({ app, index }) {
   const statusColors = {
     'Interview': 'bg-primary-50 text-primary-600 border-primary-200',
     'In Review': 'bg-slate-50 text-slate-600 border-slate-200',

@@ -114,6 +114,7 @@ export default function DashboardLayout() {
               <Zap className="w-6 h-6 text-white" fill="white" />
             </div>
             
+            <AnimatePresence>
               {sidebarOpen && (
                 <motion.div 
                   initial={{ opacity: 0, x: -10 }} 
@@ -146,6 +147,7 @@ export default function DashboardLayout() {
                     {item.icon}
                   </div>
                   
+                  <AnimatePresence>
                     {sidebarOpen && (
                       <motion.span 
                         initial={{ opacity: 0 }} 

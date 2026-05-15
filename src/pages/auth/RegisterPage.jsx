@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState('role');
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [selectedRole, setSelectedRole] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const roles = [
@@ -114,7 +114,7 @@ export default function RegisterPage() {
                     {roles.map((role) => (
                         <button
                             key={role.id}
-                            onClick={() => setSelectedRole(role.id as Role)}
+                            onClick={() => setSelectedRole(role.id)}
                             className={`p-8 rounded-[2rem] border transition-all flex flex-col items-start text-left gap-6 group relative overflow-hidden shadow-sm ${
                                 selectedRole === role.id 
                                     ? 'bg-slate-50 border-primary-600 ring-4 ring-primary-600/5 shadow-xl shadow-primary-600/5' 

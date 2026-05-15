@@ -333,7 +333,7 @@ export default function LandingPage() {
   );
 }
 
-function RoleCard({ className, role, title, desc, icon, image, accent }: { className?; role; title; desc; icon.ReactNode; image?; accent: 'primary' | 'slate' | 'dark' | 'primary-light' }) {
+function RoleCard({ className, role, title, desc, icon, image, accent }) {
   const accentClasses = {
     'primary': 'bg-primary-600 text-white',
     'slate': 'bg-white text-slate-950 border border-slate-100',
@@ -377,7 +377,7 @@ function RoleCard({ className, role, title, desc, icon, image, accent }: { class
   );
 }
 
-function FeatureCard({ icon, title, description, accent }: { icon.ReactNode, title, description, accent: 'primary' | 'slate' }) {
+function FeatureCard({ icon, title, description, accent }) {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -393,7 +393,7 @@ function FeatureCard({ icon, title, description, accent }: { icon.ReactNode, tit
   );
 }
 
-function FlowStep({ number, title, desc }: { number, title, desc }) {
+function FlowStep({ number, title, desc }) {
   return (
     <div className="flex gap-12 group relative">
       <div className="w-20 h-20 min-w-[80px] bg-white border border-slate-100 rounded-3xl flex items-center justify-center text-primary-600 font-display text-3xl font-bold shadow-sm group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary-600/20 transition-all duration-500">
@@ -407,7 +407,7 @@ function FlowStep({ number, title, desc }: { number, title, desc }) {
   );
 }
 
-function FaqItem({ question, answer }: { question, answer }) {
+function FaqItem({ question, answer }) {
   return (
     <div className="space-y-4">
        <h4 className="text-2xl font-bold text-white font-display tracking-tight">{question}</h4>
@@ -416,7 +416,7 @@ function FaqItem({ question, answer }: { question, answer }) {
   );
 }
 
-function TestimonialCard({ quote, name, role, avatar }: { quote, name, role, avatar }) {
+function TestimonialCard({ quote, name, role, avatar }) {
   return (
     <Card className="p-10 rounded-[2.5rem] bg-white border border-slate-100 relative group h-full flex flex-col shadow-sm hover:shadow-md transition-all">
        <Heart className="absolute top-10 right-10 w-6 h-6 text-slate-100 group-hover:text-primary-600 group-hover:fill-primary-600 transition-all" />

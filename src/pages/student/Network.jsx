@@ -177,7 +177,7 @@ export default function ProfessionalNetwork() {
   );
 }
 
-function NetworkStat({ label, value, growth }: { label; value; growth }) {
+function NetworkStat({ label, value, growth }) {
   return (
     <Card className="bg-white border-slate-200 p-8 overflow-hidden relative shadow-sm">
        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-600 to-primary-400 opacity-20" />
@@ -190,7 +190,7 @@ function NetworkStat({ label, value, growth }: { label; value; growth }) {
   );
 }
 
-function CommunityCard({ name, members, color }: { name; members; color }) {
+function CommunityCard({ name, members, color }) {
   return (
     <Card className="bg-white border-slate-200 p-8 transition-all group cursor-pointer hover:border-primary-400 shadow-sm hover:shadow-md">
        <div className="flex items-center justify-between mb-8">

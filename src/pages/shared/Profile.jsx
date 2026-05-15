@@ -237,7 +237,7 @@ export default function ProfilePage() {
   );
 }
 
-function ExperienceItem({ title, company, period, description }: { title; company; period; description }) {
+function ExperienceItem({ title, company, period, description }) {
   return (
     <div className="flex gap-8 group">
       <div className="relative">

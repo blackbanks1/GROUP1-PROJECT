@@ -186,7 +186,7 @@ export default function StudentPortfolio() {
   );
 }
 
-function PortfolioStat({ label, value }: { label; value }) {
+function PortfolioStat({ label, value }) {
   return (
     <div className="space-y-1 text-center md:text-left px-4">
        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</p>
@@ -195,7 +195,7 @@ function PortfolioStat({ label, value }: { label; value }) {
   );
 }
 
-function SocialButton({ icon, label, handle, connected = false }: { icon; label; handle; connected? }) {
+function SocialButton({ icon, label, handle, connected = false }) {
   return (
     <Button variant="outline" className={`h-12 px-6 rounded-xl border flex items-center gap-3 transition-all bg-white ${
       connected ? 'bg-primary-50 border-primary-200 text-primary-700' : 'border-slate-200 text-slate-400 hover:text-slate-900 shadow-sm'

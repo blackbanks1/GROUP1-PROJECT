@@ -198,7 +198,7 @@ export default function CompanyDashboard() {
   );
 }
 
-function StatCard({ icon, label, value, subtext, accent }: { icon.ReactNode; label; value; subtext; accent }) {
+function StatCard({ icon, label, value, subtext, accent }) {
   return (
     <Card className="bg-white border-none transition-all group overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-600/5 p-10 rounded-[2.5rem] relative">
       <div className={`absolute top-0 left-0 w-full h-1.5 ${accent} opacity-20`} />
