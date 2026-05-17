@@ -103,4 +103,11 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ prompt }),
   }),
+
+  // Feed & Communication
+  getPosts: (userId) => fetchApi(`/posts${userId ? `?userId=${userId}` : ''}`),
+  createPost: (postData) => fetchApi('/posts', {
+    method: 'POST',
+    body: JSON.stringify(postData),
+  }),
 };

@@ -25,6 +25,7 @@ let STATE = {
   CERTIFICATES: [],
   REPORTS: [],
   APPLICATIONS: [],
+  POSTS: [],
   LECTURER_CLASSES: { 'l1': [] }
 };
 
@@ -280,6 +281,50 @@ app.post('/api/ai/generate-roadmap', async (req, res) => {
     const result = await genAI.getGenerativeModel({ model: "gemini-pro" }).generateContent(prompt);
     res.json({ text: (await result.response).text() });
   } catch (error) { res.status(500).json({ error: 'AI Generation failed' }); }
+});
+
+// Feed & Communication
+app.get('/api/posts', (req, res) => {
+  const { userId } = req.query;
+  const user = STATE.USERS.find(u => u.id === userId);
+  
+  if (!user) return res.json(STATE.POSTS.filter(p => p.type === 'broadcast'));
+  
+  const userGroup = STATE.GROUPS.find(g => g.studentIds.includes(userId));
+  
+  const visiblePosts = STATE.POSTS.filter(post => {
+    // Everyone sees broadcasts
+    if (post.type === 'broadcast') return true;
+    
+    // Multicast: visible to group members
+    if (post.type === 'multicast' && userGroup && post.targetId === userGroup.id) return true;
+    
+    // Unicast: visible to sender or recipient
+    if (post.type === 'unicast' && (post.authorId === userId || post.targetId === userId)) return true;
+    
+    return false;
+  });
+  
+  res.json(visiblePosts);
+});
+
+app.post('/api/posts', (req, res) => {
+  const { authorId, authorName, authorRole, authorAvatar, content, type, targetId } = req.body;
+  const newPost = {
+    id: `p${Date.now()}`,
+    authorId,
+    authorName,
+    authorRole,
+    authorAvatar,
+    content,
+    type: type || 'broadcast',
+    targetId: targetId || null,
+    likes: 0,
+    comments: 0,
+    createdAt: new Date().toISOString()
+  };
+  STATE.POSTS.unshift(newPost);
+  res.status(201).json(newPost);
 });
 
 app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
