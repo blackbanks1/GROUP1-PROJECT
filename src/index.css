@@ -62,12 +62,12 @@
 
 @layer base {
   body {
-    @apply bg-white text-slate-900 font-sans antialiased selection:bg-primary-500/10;
+    @apply bg-white text-slate-900 font-sans antialiased;
     color-scheme: light;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight text-slate-900;
+    @apply font-display text-slate-900;
   }
 }
 

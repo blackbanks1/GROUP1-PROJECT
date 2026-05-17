@@ -1,197 +1,204 @@
 import * as React from 'react';
 import { motion } from 'motion/react';
 import { 
-  CheckCircle2, 
+  Briefcase, 
+  Search, 
+  Filter, 
+  MapPin, 
   Clock, 
-  XCircle, 
-  ArrowRight, 
-  Building2, 
-  Calendar, 
-  Filter,
-  Search,
+  CheckCircle2, 
   ChevronRight,
-  MapPin
+  TrendingUp,
+  Building2,
+  Calendar,
+  Zap,
+  ArrowUpRight
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
-const MOCK_APPLICATIONS = [
-  {
-    id: '1',
-    company: 'Google',
-    role: 'UI/UX Design Intern',
-    status: 'Interview',
-    appliedDate: 'May 10, 2024',
-    location: 'Remote',
-    logo: 'https://api.dicebear.com/7.x/initials/svg?seed=GO'
-  },
-  {
-    id: '2',
-    company: 'Stripe',
-    role: 'Frontend Engineer',
-    status: 'In Review',
-    appliedDate: 'May 12, 2024',
-    location: 'Dublin, IE',
-    logo: 'https://api.dicebear.com/7.x/initials/svg?seed=ST'
-  },
-  {
-    id: '3',
-    company: 'Meta',
-    role: 'Product Analytics',
-    status: 'Accepted',
-    appliedDate: 'April 28, 2024',
-    location: 'Menlo Park, CA',
-    logo: 'https://api.dicebear.com/7.x/initials/svg?seed=MT'
-  },
-  {
-    id: '4',
-    company: 'Amazon',
-    role: 'Cloud Intern',
-    status: 'Rejected',
-    appliedDate: 'April 15, 2024',
-    location: 'Seattle, WA',
-    logo: 'https://api.dicebear.com/7.x/initials/svg?seed=AM'
+export default function Applications() {
+  const studentId = localStorage.getItem('careerlink_user_id') || 's1';
+  const [internships, setInternships] = React.useState([]);
+  const [myApplications, setMyApplications] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const [internData, appsData] = await Promise.all([
+          api.getInternships(),
+          api.getApplications()
+        ]);
+        setInternships(internData);
+        setMyApplications(appsData.filter(a => a.studentId === studentId));
+      } catch (error) {
+        toast.error('Failed to load opportunities');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const handleApply = async (internshipId) => {
+    try {
+      await api.applyForInternship({ studentId, internshipId });
+      toast.success('Application submitted successfully!');
+      
+      // Update local state
+      const updatedApps = await api.getApplications();
+      setMyApplications(updatedApps.filter(a => a.studentId === studentId));
+    } catch (error) {
+      toast.error(error.message || 'Failed to submit application');
+    }
+  };
+
+  const isApplied = (id) => myApplications.some(a => a.internshipId === id);
+
+  const stats = [
+    { label: 'Active Pipeline', count: myApplications.length, color: 'text-primary-600', bg: 'bg-primary-50' },
+    { label: 'Interviews', count: 0, color: 'text-violet-600', bg: 'bg-violet-50' },
+    { label: 'Offers', count: 0, color: 'text-emerald-600', bg: 'bg-emerald-50' }
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
-];
 
-export default function MyApplications() {
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-sans">
+    <div className="space-y-12 animate-in fade-in duration-700 font-sans pb-20">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-slate-100">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="h-px w-8 bg-primary-600" />
-            <span className="text-[10px] uppercase font-black tracking-[0.4em] text-primary-600">Application Terminal</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-1">
+             <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
+             <span className="text-[11px] font-bold uppercase tracking-wide text-primary-600">Career Pipeline</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter font-display text-slate-950 uppercase italic leading-tight">
-            My <span className="text-primary-600">Applications</span>
-          </h1>
-          <p className="text-slate-500 text-xl font-medium max-w-2xl leading-relaxed">
-            Monitor your professional outreach and track candidacy status across global partners.
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 uppercase">Market Applications</h1>
+          <p className="text-slate-500 text-base">Track your professional outreach and interview progression.</p>
         </div>
-        <div className="flex items-center gap-4">
-           <Button variant="outline" className="text-slate-400 border-slate-200 hover:bg-slate-50 rounded-2xl h-16 px-10 font-bold text-xs uppercase tracking-widest transition-all bg-white shadow-sm">
-             Drafts (02)
-           </Button>
-           <Button className="bg-primary-600 hover:bg-primary-700 h-16 px-10 rounded-2xl shadow-xl shadow-primary-600/10 font-black uppercase tracking-widest text-[10px] transition-all text-white border-none hover:scale-105">
-             New Pipeline
-           </Button>
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input 
+            placeholder="Search applications..." 
+            className="pl-10 h-11 bg-white border-slate-200 rounded-xl"
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <StatusSummary label="Total Pipeline" count="12" color="bg-slate-100" />
-        <StatusSummary label="Active Review" count="05" color="bg-primary-50" textColor="text-primary-600" />
-        <StatusSummary label="Interviews" count="02" color="bg-primary-100" textColor="text-primary-700" />
-        <StatusSummary label="Placement" count="01" color="bg-primary-600" textColor="text-primary-800" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {stats.map((s, i) => (
+          <StatCard key={i} {...s} />
+        ))}
       </div>
 
-      <Tabs defaultValue="all" className="w-full">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-8">
-            <TabsList className="bg-slate-50 border border-slate-200 h-14 p-1.5 rounded-2xl">
-              {['all', 'review', 'interview', 'accepted', 'rejected'].map((tab) => (
-                <TabsTrigger 
-                  key={tab} 
-                  value={tab} 
-                  className="rounded-xl px-6 h-full font-bold text-[10px] uppercase tracking-widest data-[state=active]:bg-primary-600 data-[state=active]:text-white transition-all text-slate-500"
-                >
-                  {tab}
-                </TabsTrigger>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="lg:col-span-8 space-y-6">
+           <div className="flex items-center justify-between px-2">
+              <h3 className="text-xl font-bold text-slate-900 uppercase">Current Opportunities</h3>
+              <Button variant="ghost" className="text-primary-600 font-bold text-xs uppercase tracking-wide">Filter Results</Button>
+           </div>
+
+           <div className="space-y-4">
+              {internships.map((opp) => (
+                <Card key={opp.id} className="group border-slate-100 bg-white hover:border-primary-200 hover:shadow-xl hover:shadow-primary-600/5 transition-all duration-300 rounded-2xl cursor-pointer">
+                   <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                         <div className="flex items-start gap-5">
+                            <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-primary-50 group-hover:border-primary-100 transition-all">
+                               <Building2 className="w-7 h-7 text-slate-400 group-hover:text-primary-600" />
+                            </div>
+                            <div className="space-y-1">
+                               <h4 className="font-bold text-lg text-slate-900 group-hover:text-primary-600 transition-colors uppercase">{opp.title}</h4>
+                               <p className="text-sm font-semibold text-slate-500">{opp.companyName} &bull; {opp.location}</p>
+                               <div className="flex flex-wrap gap-2 mt-3">
+                                  {(opp.skills || []).slice(0, 3).map(skill => (
+                                    <Badge key={skill} variant="secondary" className="bg-slate-50 text-slate-500 font-bold text-[9px] uppercase tracking-wide border-none px-2.5">
+                                      {skill}
+                                    </Badge>
+                                  ))}
+                               </div>
+                            </div>
+                         </div>
+                         <div className="flex flex-row md:flex-col items-center md:items-end gap-4">
+                            {isApplied(opp.id) ? (
+                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold text-[10px] uppercase px-3 py-1">Applied</Badge>
+                            ) : (
+                              <Badge className="bg-primary-50 text-primary-600 border-none font-bold text-[10px] uppercase px-3 py-1">Open</Badge>
+                            )}
+                            <Button 
+                              size="icon" 
+                              variant="ghost" 
+                              disabled={isApplied(opp.id)}
+                              onClick={() => handleApply(opp.id)}
+                              className={`h-10 w-10 rounded-xl transition-all ${isApplied(opp.id) ? 'text-emerald-500' : 'hover:bg-primary-50 hover:text-primary-600'}`}
+                            >
+                               {isApplied(opp.id) ? <CheckCircle2 className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
+                            </Button>
+                         </div>
+                      </div>
+                   </CardContent>
+                </Card>
               ))}
-            </TabsList>
-
-            <div className="relative w-full lg:w-96 group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary-600 transition-colors" />
-                <Input placeholder="Filter applications..." className="bg-slate-50 border-slate-200 h-14 pl-12 rounded-2xl text-xs font-bold uppercase tracking-widest text-slate-900 placeholder:text-slate-400" />
-            </div>
+           </div>
         </div>
 
-        <TabsContent value="all" className="space-y-4 outline-none">
-          {MOCK_APPLICATIONS.map((app, idx) => (
-            <ApplicationCard key={app.id} app={app} index={idx} />
-          ))}
-        </TabsContent>
+        <div className="lg:col-span-4 space-y-8">
+           <Card className="bg-slate-900 border-none rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-600/20 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
+              <div className="relative z-10 space-y-8">
+                 <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary-400 border border-white/10">
+                    <Zap className="w-7 h-7" />
+                 </div>
+                 <h3 className="text-3xl font-bold tracking-tight uppercase leading-tight">Mastery Certification</h3>
+                 <p className="text-slate-400 font-medium text-base leading-relaxed">
+                   Verified mastery certificates increase your interview conversion rate by up to 45% in the CareerLink ecosystem.
+                 </p>
+                 <Button className="w-full h-14 bg-white text-slate-900 hover:bg-slate-100 rounded-xl font-bold uppercase tracking-wide text-[10px]">
+                    Boost Profile
+                 </Button>
+              </div>
+           </Card>
 
-        <TabsContent value="review" className="space-y-4 outline-none">
-          {MOCK_APPLICATIONS.filter(a => a.status === 'In Review').map((app, idx) => (
-            <ApplicationCard key={app.id} app={app} index={idx} />
-          ))}
-        </TabsContent>
-      </Tabs>
+           <div className="space-y-4">
+              <h3 className="text-[11px] font-bold uppercase tracking-wide text-slate-400 px-4">Market Watch</h3>
+              <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm space-y-6">
+                 <div className="flex justify-between items-center pb-4 border-b border-slate-50">
+                    <div className="flex items-center gap-3">
+                       <TrendingUp className="w-4 h-4 text-emerald-500" />
+                       <span className="text-xs font-bold text-slate-700">Internship Demand</span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-600">+18%</span>
+                 </div>
+                 <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                       <Calendar className="w-4 h-4 text-primary-600" />
+                       <span className="text-xs font-bold text-slate-700">Hiring Season</span>
+                    </div>
+                    <span className="text-xs font-bold text-primary-600">Peak</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatusSummary({ label, count, color, textColor = 'text-slate-900' }) {
+function StatCard({ label, count, color, bg }) {
   return (
-    <Card className={`bg-white border-slate-100 overflow-hidden relative shadow-sm hover:shadow-md transition-all rounded-[2rem] border-none group`}>
-      <div className={`absolute top-0 left-0 w-full h-1.5 ${color}`} />
-      <CardContent className="p-10">
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-4 group-hover:text-primary-600 transition-colors font-display italic">{label}</p>
-        <h3 className={`text-6xl font-bold tracking-tighter font-display italic ${textColor}`}>{count}</h3>
-      </CardContent>
+    <Card className={`border-none ${bg} rounded-2xl p-8 group hover:shadow-lg transition-all duration-500`}>
+        <p className={`text-[10px] font-bold uppercase tracking-wide ${color} mb-4 opacity-60`}>{label}</p>
+        <h3 className={`text-6xl font-bold tracking-tight ${color}`}>{count}</h3>
     </Card>
-  );
-}
-
-function ApplicationCard({ app, index }) {
-  const statusColors = {
-    'Interview': 'bg-primary-50 text-primary-600 border-primary-200',
-    'In Review': 'bg-slate-50 text-slate-600 border-slate-200',
-    'Accepted': 'bg-emerald-50 text-emerald-600 border-emerald-200',
-    'Rejected': 'bg-red-50 text-red-600 border-red-200'
-  };
-
-  const StatusIcon = {
-    'Interview': <Calendar className="w-4 h-4" />,
-    'In Review': <Clock className="w-4 h-4" />,
-    'Accepted': <CheckCircle2 className="w-4 h-4" />,
-    'Rejected': <XCircle className="w-4 h-4" />
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-    >
-      <Card className="bg-white border-none hover:shadow-xl hover:shadow-primary-600/5 transition-all group cursor-pointer overflow-hidden p-8 rounded-[2.5rem] shadow-sm relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-50/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
-        
-        <div className="flex flex-col lg:flex-row lg:items-center gap-8 relative z-10">
-          <div className="flex items-center gap-6 flex-1">
-             <div className="w-20 h-20 rounded-2xl bg-slate-50 border border-slate-100 p-3 flex items-center justify-center group-hover:bg-white group-hover:border-primary-100 transition-all shadow-sm">
-                <img src={app.logo} alt={app.company} className="w-full h-full rounded-xl object-cover" />
-             </div>
-             <div className="space-y-1">
-                <h4 className="text-2xl font-bold tracking-tight text-slate-950 group-hover:text-primary-600 transition-colors leading-tight">{app.role}</h4>
-                <div className="flex items-center gap-4 text-slate-400 text-sm font-medium">
-                   <span className="flex items-center gap-2"><Building2 className="w-4 h-4" /> {app.company}</span>
-                   <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {app.location}</span>
-                </div>
-             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 lg:justify-end">
-             <div className="text-right hidden lg:block">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Timeline</p>
-                <p className="text-sm font-semibold text-slate-600">{app.appliedDate}</p>
-             </div>
-             <div className="w-px h-10 bg-slate-100 hidden lg:block" />
-             <Badge className={`h-12 px-6 rounded-xl font-semibold text-sm border flex items-center gap-2 shadow-sm transition-transform active:scale-95 ${statusColors[app.status]}`}>
-               {StatusIcon[app.status]}
-               {app.status}
-             </Badge>
-             <Button variant="outline" size="icon" className="w-12 h-12 rounded-xl bg-white text-slate-400 group-hover:text-white group-hover:bg-primary-600 group-hover:border-primary-600 border-slate-200 transition-all shadow-sm hover:scale-110">
-                <ChevronRight className="w-5 h-5" />
-             </Button>
-          </div>
-        </div>
-      </Card>
-    </motion.div>
   );
 }

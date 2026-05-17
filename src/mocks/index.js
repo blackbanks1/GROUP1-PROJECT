@@ -159,7 +159,32 @@ export const MOCK_CERTIFICATES = [
     className: 'Web Engineering 301',
     lecturerName: 'Dr. Sarah Smith',
     grade: 'A', 
+    progress: 95,
     status: 'approved',
     issuedDate: 'May 12, 2024'
+  },
+  { 
+    id: 'cert2', 
+    studentId: 's2', 
+    studentName: 'Jane Doe',
+    classId: 'c1', 
+    className: 'Web Engineering 301',
+    lecturerName: 'Dr. Sarah Smith',
+    grade: 'B', 
+    progress: 82,
+    status: 'pending',
+    issuedDate: 'May 14, 2024'
+  },
+  { 
+    id: 'cert3', 
+    studentId: 's3', 
+    studentName: 'Mike Ross',
+    classId: 'c1', 
+    className: 'Web Engineering 301',
+    lecturerName: 'Dr. Sarah Smith',
+    grade: 'C', 
+    progress: 45,
+    status: 'pending',
+    issuedDate: 'May 15, 2024'
   }
 ];

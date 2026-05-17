@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
@@ -27,6 +28,23 @@ export default function RegisterPage() {
   const [selectedRole, setSelectedRole] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    university: '',
+    course: '',
+    major: '',
+    level: '',
+    className: '',
+    companyName: '',
+    industry: '',
+    website: '',
+    faculty: '',
+    specialization: ''
+  });
+
   const roles = [
     { id: 'student', icon: <GraduationCap className="w-8 h-8" />, label: 'Student', desc: 'Looking for top-tier internships and professional mentorship.', color: 'border-primary-100 text-primary-600 bg-primary-50' },
     { id: 'company', icon: <Building2 className="w-8 h-8" />, label: 'Company', desc: 'Discovering the next generation of industry-leading talent.', color: 'border-primary-100 text-primary-600 bg-primary-50' },
@@ -34,20 +52,40 @@ export default function RegisterPage() {
     { id: 'admin', icon: <ShieldCheck className="w-8 h-8" />, label: 'Admin', desc: 'Managing the ecosystem and ensuring platform security.', color: 'border-primary-100 text-primary-600 bg-primary-50' },
   ];
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 'role' && !selectedRole) {
       toast.error('Please select a role to continue');
       return;
     }
     
     if (step === 'role') setStep('info');
-    else if (step === 'info') setStep('setup');
+    else if (step === 'info') {
+      if (!formData.name || !formData.email || !formData.password) {
+        toast.error('Please fill in all account information');
+        return;
+      }
+      setStep('setup');
+    }
     else if (step === 'setup') {
       setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
+      try {
+        const userData = {
+          ...formData,
+          role: selectedRole
+        };
+        const user = await api.signup(userData);
+        
+        // Auto-login after registration
+        localStorage.setItem('careerlink_role', user.role);
+        localStorage.setItem('careerlink_user_id', user.id);
+        
         setStep('complete');
-      }, 1500);
+        toast.success('Registration successful! Welcome to CareerLink.');
+      } catch (error) {
+        toast.error(error.message || 'Registration failed');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -75,7 +113,7 @@ export default function RegisterPage() {
                 <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg shadow-primary-600/20">
                     <Zap className="w-6 h-6 text-white" fill="white" />
                 </div>
-                <span className="text-2xl font-bold tracking-tighter text-slate-950 font-display italic">CareerLink</span>
+                <span className="text-2xl font-bold tracking-tighter text-slate-950">CareerLink</span>
             </Link>
             
             {/* Step Indicator */}
@@ -89,7 +127,7 @@ export default function RegisterPage() {
                 />
               ))}
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-950 uppercase">
                {step === 'role' && 'Select Your Role'}
                {step === 'info' && 'Account Information'}
                {step === 'setup' && 'Profile Setup'}
@@ -122,7 +160,7 @@ export default function RegisterPage() {
                                 {role.icon}
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-xl font-bold text-slate-900">{role.label}</h3>
+                                <h3 className="text-xl font-bold text-slate-900 uppercase">{role.label}</h3>
                                 <p className="text-sm text-slate-400 font-normal leading-relaxed">{role.desc}</p>
                             </div>
                             {selectedRole === role.id && (
@@ -134,7 +172,7 @@ export default function RegisterPage() {
                     ))}
                 </div>
                 <div className="mt-12 flex justify-center">
-                   <Button onClick={handleNextStep} size="lg" className="h-14 px-10 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-full group shadow-xl shadow-primary-600/20 border-none">
+                   <Button onClick={handleNextStep} size="lg" className="h-14 px-10 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-full group shadow-xl shadow-primary-600/20 border-none uppercase">
                       Continue
                       <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                    </Button>
@@ -149,22 +187,39 @@ export default function RegisterPage() {
                       <div className="grid gap-6">
                          <div className="space-y-2">
                            <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Full Name</Label>
-                           <Input placeholder="John Doe" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                           <Input 
+                             value={formData.name}
+                             onChange={(e) => setFormData({...formData, name: e.target.value})}
+                             placeholder="John Doe" 
+                             className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                           />
                          </div>
                          <div className="space-y-2">
                            <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Work Email</Label>
-                           <Input type="email" placeholder="john@university.edu" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                           <Input 
+                             type="email" 
+                             value={formData.email}
+                             onChange={(e) => setFormData({...formData, email: e.target.value})}
+                             placeholder="john@university.edu" 
+                             className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                           />
                          </div>
                          <div className="space-y-2">
                            <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Password</Label>
-                           <Input type="password" placeholder="••••••••" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                           <Input 
+                             type="password" 
+                             value={formData.password}
+                             onChange={(e) => setFormData({...formData, password: e.target.value})}
+                             placeholder="••••••••" 
+                             className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                           />
                          </div>
                       </div>
                       <div className="pt-4 space-y-4">
-                        <Button onClick={handleNextStep} className="w-full h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-xl shadow-primary-600/10 border-none">
+                        <Button onClick={handleNextStep} className="w-full h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-xl shadow-primary-600/10 border-none uppercase">
                             Next Step
                         </Button>
-                        <Button variant="ghost" onClick={handlePrevStep} className="w-full text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-xl h-14 font-semibold text-sm">
+                        <Button variant="ghost" onClick={handlePrevStep} className="w-full text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-xl h-14 font-semibold text-sm uppercase">
                             Go Back
                         </Button>
                       </div>
@@ -181,17 +236,51 @@ export default function RegisterPage() {
                         <div className="space-y-6">
                            <div className="space-y-2">
                              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">University</Label>
-                             <Input placeholder="Harvard University" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                             <Input 
+                               value={formData.university}
+                               onChange={(e) => setFormData({...formData, university: e.target.value})}
+                               placeholder="Harvard University" 
+                               className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                             />
                            </div>
-                           <div className="space-y-2">
-                             <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Major / Department</Label>
-                             <Input placeholder="Computer Science" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                           <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                               <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Course of Study</Label>
+                               <Input 
+                                 value={formData.course}
+                                 onChange={(e) => setFormData({...formData, course: e.target.value})}
+                                 placeholder="B.Sc Computer Science" 
+                                 className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                               />
+                             </div>
+                             <div className="space-y-2">
+                               <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Major / Department</Label>
+                               <Input 
+                                 value={formData.major}
+                                 onChange={(e) => setFormData({...formData, major: e.target.value})}
+                                 placeholder="Computer Science" 
+                                 className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                               />
+                             </div>
                            </div>
-                           <div className="space-y-2">
-                             <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Resume / CV</Label>
-                             <div className="border-2 border-dashed border-slate-100 rounded-2xl p-8 flex flex-col items-center justify-center gap-2 hover:border-primary-400 hover:bg-primary-50 transition-all cursor-pointer group bg-slate-50/50">
-                                <Upload className="w-8 h-8 text-slate-200 group-hover:text-primary-600 transition-colors" />
-                                <p className="text-xs font-semibold text-slate-300 group-hover:text-slate-600">Click to upload or drag & drop</p>
+                           <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                               <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Level / Year</Label>
+                               <Input 
+                                 value={formData.level}
+                                 onChange={(e) => setFormData({...formData, level: e.target.value})}
+                                 placeholder="300 Level" 
+                                 className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                               />
+                             </div>
+                             <div className="space-y-2">
+                               <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Class</Label>
+                               <Input 
+                                 value={formData.className}
+                                 onChange={(e) => setFormData({...formData, className: e.target.value})}
+                                 placeholder="Alpha-2024" 
+                                 className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                               />
                              </div>
                            </div>
                         </div>
@@ -201,15 +290,30 @@ export default function RegisterPage() {
                         <div className="space-y-6">
                            <div className="space-y-2">
                              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Company Name</Label>
-                             <Input placeholder="Acme Inc." className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                             <Input 
+                               value={formData.companyName}
+                               onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                               placeholder="Acme Inc." 
+                               className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                             />
                            </div>
                            <div className="space-y-2">
                              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Industry</Label>
-                             <Input placeholder="Software Development" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                             <Input 
+                               value={formData.industry}
+                               onChange={(e) => setFormData({...formData, industry: e.target.value})}
+                               placeholder="Software Development" 
+                               className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                             />
                            </div>
                            <div className="space-y-2">
                              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Company Website</Label>
-                             <Input placeholder="https://acme.com" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                             <Input 
+                               value={formData.website}
+                               onChange={(e) => setFormData({...formData, website: e.target.value})}
+                               placeholder="https://acme.com" 
+                               className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                             />
                            </div>
                         </div>
                       )}
@@ -218,11 +322,21 @@ export default function RegisterPage() {
                         <div className="space-y-6">
                            <div className="space-y-2">
                              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Faculty / Department</Label>
-                             <Input placeholder="School of Engineering" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                             <Input 
+                               value={formData.faculty}
+                               onChange={(e) => setFormData({...formData, faculty: e.target.value})}
+                               placeholder="School of Engineering" 
+                               className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                             />
                            </div>
                            <div className="space-y-2">
                              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Specialization</Label>
-                             <Input placeholder="Artificial Intelligence" className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" />
+                             <Input 
+                               value={formData.specialization}
+                               onChange={(e) => setFormData({...formData, specialization: e.target.value})}
+                               placeholder="Artificial Intelligence" 
+                               className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
+                             />
                            </div>
                         </div>
                       )}
@@ -231,7 +345,7 @@ export default function RegisterPage() {
                         <Button 
                           onClick={handleNextStep} 
                           disabled={isLoading}
-                          className="w-full h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-xl shadow-primary-600/10 border-none relative overflow-hidden"
+                          className="w-full h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-xl shadow-primary-600/10 border-none relative overflow-hidden uppercase"
                         >
                            {isLoading ? (
                              <div className="flex items-center gap-2">
@@ -240,7 +354,7 @@ export default function RegisterPage() {
                              </div>
                            ) : 'Complete Registration'}
                         </Button>
-                        <Button variant="ghost" onClick={handlePrevStep} className="w-full text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-xl h-14 font-semibold text-sm">
+                        <Button variant="ghost" onClick={handlePrevStep} className="w-full text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-xl h-14 font-semibold text-sm uppercase">
                             Go Back
                         </Button>
                       </div>
@@ -268,7 +382,7 @@ export default function RegisterPage() {
                  </div>
 
                  <div className="space-y-6">
-                    <h2 className="text-4xl font-bold tracking-tight text-slate-950">Registration Successful</h2>
+                    <h2 className="text-4xl font-bold tracking-tight text-slate-950 uppercase">Registration Successful</h2>
                     <p className="text-slate-500 text-xl max-w-lg mx-auto font-normal">
                       You are now part of the most advanced career network. Welcome to the future of professional growth.
                     </p>
@@ -278,12 +392,12 @@ export default function RegisterPage() {
                     <Button 
                       onClick={() => navigate('/login')}
                       size="lg" 
-                      className="h-14 px-10 text-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 rounded-full shadow-xl shadow-primary-600/20 border-none"
+                      className="h-14 px-10 text-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 rounded-full shadow-xl shadow-primary-600/20 border-none uppercase"
                     >
                        Go to Login
                     </Button>
                     <Link to="/">
-                       <Button variant="ghost" size="lg" className="h-14 px-10 text-sm font-semibold text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-full">
+                       <Button variant="ghost" size="lg" className="h-14 px-10 text-sm font-semibold text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-full uppercase">
                           Return Home
                        </Button>
                     </Link>

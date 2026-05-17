@@ -1,22 +1,19 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { 
-  Users, 
-  UserPlus, 
+  Users as UsersIcon, 
   Search, 
-  Filter, 
+  UserPlus, 
   MoreVertical, 
   Mail, 
-  Shield, 
-  CheckCircle2, 
-  Trash2,
-  Download,
-  Upload,
-  UserCheck,
-  UserCog,
-  User
+  ShieldCheck, 
+  Building2, 
+  GraduationCap,
+  Filter,
+  CheckCircle2,
+  X,
+  Plus
 } from 'lucide-react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -29,232 +26,166 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TagInput } from "@/components/ui/tag-input";
-import { MOCK_USERS } from '@/mocks';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 export default function AdminUsers() {
-  const [users, setUsers] = useState(MOCK_USERS);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
-  const [isBulkAddOpen, setIsBulkAddOpen] = useState(false);
-  const [bulkTags, setBulkTags] = useState([]);
+  const [users, setUsers] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedRole, setSelectedRole] = React.useState('all');
+  
+  React.useEffect(() => {
+    async function loadUsers() {
+      try {
+        const data = await api.getUsers();
+        setUsers(data);
+      } catch (error) {
+        toast.error('Failed to load user directory');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadUsers();
+  }, []);
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesTab = activeTab === 'all' || user.role === activeTab;
-    
-    return matchesSearch && matchesTab;
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
+    return matchesSearch && matchesRole;
   });
 
-  const handleBulkAdd = () => {
-    if (bulkTags.length === 0) {
-      toast.error('Please add at least one email address');
-      return;
-    }
-
-    const newUsers = bulkTags.map((email, idx) => ({
-      id: `new-${Date.now()}-${idx}`,
-      name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
-      email: email,
-      role: 'lecturer',
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      createdAt: new Date().toISOString()
-    }));
-
-    setUsers([...newUsers, ...users]);
-    setIsBulkAddOpen(false);
-    setBulkTags([]);
-    toast.success(`Successfully added ${bulkTags.length} lecturers`);
+  const handleAction = (msg) => {
+    toast.info(msg);
   };
 
-  const deleteUser = (id) => {
-    setUsers(users.filter(u => u.id !== id));
-    toast.success('User removed from platform');
-  };
-
-  const getRoleBadge = (role) => {
-    switch (role) {
-      case 'admin': return <Badge className="bg-red-50 text-red-600 border-none">Admin</Badge>;
-      case 'lecturer': return <Badge className="bg-blue-50 text-blue-600 border-none">Lecturer</Badge>;
-      case 'company': return <Badge className="bg-emerald-50 text-emerald-600 border-none">Company</Badge>;
-      case 'student': return <Badge className="bg-primary-50 text-primary-600 border-none">Student</Badge>;
-      default: return <Badge variant="outline">{role}</Badge>;
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-sans pb-12">
-      {/* Header */}
+    <div className="space-y-8 animate-in fade-in duration-700 font-sans pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="h-px w-6 bg-primary-600" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-primary-600">User Management</span>
+          <div className="flex items-center gap-2 mb-1">
+             <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
+             <span className="text-xs font-bold uppercase tracking-wide text-primary-600">User Management</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-950">
-            Platform <span className="text-primary-600">Directory</span>
-          </h1>
-          <p className="text-slate-500 text-sm font-normal max-w-2xl leading-relaxed">Manage access, roles, and onboarding for all ecosystem participants.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 uppercase">Ecosystem Directory</h1>
+          <p className="text-slate-600 text-base">Oversee all active participants, roles, and verification statuses.</p>
         </div>
-        
-        <div className="flex gap-3">
-          <Button variant="outline" className="rounded-xl h-10 px-4 font-semibold text-xs border-slate-200">
-            <Download className="w-4 h-4 mr-2" /> Export CSV
-          </Button>
-          
-          <Dialog open={isBulkAddOpen} onOpenChange={setIsBulkAddOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-10 px-6 font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-primary-600/10 border-none transition-all active:scale-95">
-                <UserPlus className="w-4 h-4 mr-2" /> Bulk Add Lecturers
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] rounded-3xl border-none shadow-2xl overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-primary-600" />
-              <DialogHeader className="p-2">
-                <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900">Add Academic Staff</DialogTitle>
-                <DialogDescription className="text-slate-500 font-medium">
-                  Paste a list of emails to instantly generate lecturer accounts.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4 space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black tracking-widest text-slate-400">Lecturer Emails</label>
-                  <TagInput 
-                    placeholder="Enter email and press Enter..." 
-                    tags={bulkTags}
-                    setTags={setBulkTags}
-                  />
-                  <p className="text-[10px] text-slate-400 italic">Type an email and press Enter to add to the list.</p>
-                </div>
+        <Button onClick={() => handleAction('Opening user provisioning wizard...')} className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-11 px-6 font-bold text-xs uppercase shadow-xl shadow-primary-600/10 border-none">
+          <UserPlus className="w-4 h-4 mr-2" /> Provision New User
+        </Button>
+      </div>
+
+      <Card className="rounded-[2rem] border-none shadow-sm overflow-hidden bg-white">
+        <CardHeader className="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/20">
+           <div className="flex items-center gap-4">
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input 
+                  placeholder="Search by name or email..." 
+                  className="pl-10 h-10 bg-white border-slate-200 rounded-xl"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <DialogFooter className="p-2 gap-2">
-                <Button variant="ghost" onClick={() => setIsBulkAddOpen(false)} className="rounded-xl font-bold text-xs uppercase tracking-widest">Cancel</Button>
-                <Button onClick={handleBulkAdd} className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl px-8 font-bold text-xs uppercase tracking-widest">Create Accounts</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-        <Tabs defaultValue="all" onValueChange={setActiveTab} className="w-full md:w-auto">
-          <TabsList className="bg-slate-100/50 p-1 rounded-xl border border-slate-100">
-            <TabsTrigger value="all" className="rounded-lg px-4 text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-primary-600 data-[state=active]:shadow-sm">All Users</TabsTrigger>
-            <TabsTrigger value="student" className="rounded-lg px-4 text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-primary-600">Students</TabsTrigger>
-            <TabsTrigger value="lecturer" className="rounded-lg px-4 text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-primary-600">Lecturers</TabsTrigger>
-            <TabsTrigger value="company" className="rounded-lg px-4 text-xs font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-primary-600">Companies</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <div className="relative w-full md:w-80 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary-600 transition-colors" />
-          <Input 
-            placeholder="Search name or email..." 
-            className="pl-10 rounded-xl border-slate-200 bg-white shadow-sm focus:ring-primary-600/10 transition-all"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Users Table */}
-      <Card className="glass border-slate-200/50 shadow-xl overflow-hidden rounded-3xl">
-        <Table>
-          <TableHeader className="bg-slate-50/50">
-            <TableRow className="border-slate-100">
-              <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">User Identity</TableHead>
-              <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Access Role</TableHead>
-              <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Platform Activity</TableHead>
-              <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6">Status</TableHead>
-              <TableHead className="text-[10px] uppercase font-black tracking-widest text-slate-400 py-4 px-6 text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => (
-                <TableRow key={user.id} className="border-slate-100 hover:bg-primary-50/30 transition-all duration-300 group/row cursor-pointer">
-                  <TableCell className="py-4 px-6">
+              <div className="flex gap-1.5 p-1 bg-white border border-slate-100 rounded-xl">
+                 {['all', 'student', 'lecturer', 'company', 'admin'].map(role => (
+                   <button
+                     key={role}
+                     onClick={() => setSelectedRole(role)}
+                     className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${selectedRole === role ? 'bg-primary-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+                   >
+                     {role}
+                   </button>
+                 ))}
+              </div>
+           </div>
+           <Button variant="outline" onClick={() => handleAction('Generating advanced CSV/PDF export...')} className="rounded-xl border-slate-100 h-10 text-xs font-bold uppercase text-slate-500">
+              <Filter className="w-4 h-4 mr-2" /> Advanced Export
+           </Button>
+        </CardHeader>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow className="hover:bg-transparent border-slate-100">
+                <TableHead className="w-[300px] h-14 text-xs font-bold uppercase tracking-wide text-slate-500 pl-8">Participant</TableHead>
+                <TableHead className="h-14 text-xs font-bold uppercase tracking-wide text-slate-500">Role & Access</TableHead>
+                <TableHead className="h-14 text-xs font-bold uppercase tracking-wide text-slate-500">Verification</TableHead>
+                <TableHead className="h-14 text-xs font-bold uppercase tracking-wide text-slate-500">Engagement</TableHead>
+                <TableHead className="h-14 text-right pr-8 h-14 text-xs font-bold uppercase tracking-wide text-slate-500">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers.length > 0 ? filteredUsers.map((user) => (
+                <TableRow key={user.id} className="hover:bg-slate-50/50 border-slate-50 transition-colors">
+                  <TableCell className="py-5 pl-8">
                     <div className="flex items-center gap-4">
-                      <Avatar className="w-10 h-10 border border-slate-200 group-hover/row:border-primary-600/50 group-hover/row:scale-105 transition-all duration-300">
+                      <Avatar className="w-10 h-10 border border-slate-100 shadow-sm">
                         <AvatarImage src={user.avatar} />
-                        <AvatarFallback className="bg-primary-50 text-primary-700 font-bold text-xs">{user.name[0]}</AvatarFallback>
+                        <AvatarFallback className="font-bold text-xs bg-slate-100 text-slate-600">{user.name[0]}</AvatarFallback>
                       </Avatar>
-                      <div className="min-w-0">
-                        <p className="font-bold text-slate-900 group-hover/row:text-primary-600 transition-colors truncate">{user.name}</p>
-                        <p className="text-[11px] text-slate-400 font-medium truncate">{user.email}</p>
+                      <div>
+                        <p className="text-sm font-bold text-slate-900 uppercase">{user.name}</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">{user.email}</p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="py-4 px-6">
-                    {getRoleBadge(user.role)}
+                  <TableCell>
+                    <Badge variant="secondary" className={`border-none font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full ${
+                      user.role === 'admin' ? 'bg-slate-900 text-white' :
+                      user.role === 'company' ? 'bg-emerald-50 text-emerald-600' :
+                      user.role === 'lecturer' ? 'bg-violet-50 text-violet-600' :
+                      'bg-primary-50 text-primary-600'
+                    }`}>
+                      {user.role}
+                    </Badge>
                   </TableCell>
-                  <TableCell className="py-4 px-6">
-                    <div className="flex flex-col gap-0.5">
-                      <p className="text-[10px] font-bold text-slate-600">Joined Platform</p>
-                      <p className="text-[10px] text-slate-400 font-medium">{user.createdAt || 'May 12, 2024'}</p>
+                  <TableCell>
+                    <div className="flex items-center gap-2 text-emerald-600">
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span className="text-[10px] font-bold uppercase">Verified</span>
                     </div>
                   </TableCell>
-                  <TableCell className="py-4 px-6">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                      <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Active</span>
+                  <TableCell>
+                    <div className="space-y-1.5 w-32">
+                        <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase">
+                          <span>Activity</span>
+                          <span>84%</span>
+                        </div>
+                        <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full w-[84%] bg-primary-600" />
+                        </div>
                     </div>
                   </TableCell>
-                  <TableCell className="py-4 px-6 text-right">
-                    <div className="flex justify-end gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity">
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg">
-                        <UserCog className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteUser(user.id);
-                        }}
-                        className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                  <TableCell className="text-right pr-8">
+                    <Button variant="ghost" size="icon" onClick={() => handleAction(`Managing ${user.name}'s permissions...`)} className="text-slate-400 hover:text-slate-900">
+                      <MoreVertical className="w-5 h-5" />
+                    </Button>
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="py-20 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center">
-                      <Users className="w-8 h-8 text-slate-200" />
-                    </div>
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No users found matching your search</p>
-                    <Button variant="link" onClick={() => { setSearchTerm(''); setActiveTab('all'); }} className="text-primary-600 text-xs font-bold uppercase tracking-widest">Clear all filters</Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-40 text-center text-slate-500 text-sm font-medium uppercase">
+                    No participants found matching your criteria.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
         <div className="p-4 border-t border-slate-100 bg-slate-50/20 flex items-center justify-between">
-           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Showing {filteredUsers.length} total users</p>
+           <p className="text-xs font-bold text-slate-500 uppercase">Showing {filteredUsers.length} total participants</p>
            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest h-8" disabled>Previous</Button>
-              <Button variant="ghost" size="sm" className="text-[10px] font-bold text-primary-600 uppercase tracking-widest h-8">Next Page</Button>
+              <Button variant="ghost" size="sm" onClick={() => toast.info('Loading previous page...')} className="text-xs font-bold text-slate-500 uppercase h-8" disabled>Previous</Button>
+              <Button variant="ghost" size="sm" onClick={() => toast.info('Loading next page...')} className="text-xs font-bold text-primary-600 uppercase h-8">Next Page</Button>
            </div>
         </div>
       </Card>

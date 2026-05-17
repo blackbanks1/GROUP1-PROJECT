@@ -1,211 +1,128 @@
+import * as React from 'react';
 import { motion } from 'motion/react';
 import { 
-  Zap, 
-  Target, 
+  Compass, 
   Map, 
-  Trophy, 
-  ArrowRight, 
-  ChevronRight,
-  Code,
-  Layout,
+  Target, 
+  CheckCircle2, 
+  Clock, 
+  ChevronRight, 
+  Award,
+  Zap,
+  Briefcase,
+  Star,
   Lock,
-  Search,
-  BrainCircuit,
-  Database,
-  Cloud
+  ArrowRight
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
-const ROADMAPS = [
-  {
-    id: 'fse',
-    title: 'Fullstack Engineering',
-    category: 'Software Dev',
-    color: 'primary',
-    icon: <Code />,
-    stages: [
-      { label: 'Foundations', tasks: ['HTML/CSS Mastery', 'JavaScript Deep Dive'] },
-      { label: 'Frontend', tasks: ['React Ecosystem', 'TypeScript Integration'] },
-      { label: 'Backend', tasks: ['Node.js & Express', 'PostgreSQL Mastery'] },
-      { label: 'Deployment', tasks: ['Docker & Cloud', 'CI/CD Pipelines'] }
-    ]
-  },
-  {
-    id: 'cys',
-    title: 'Cybersecurity Analyst',
-    category: 'Security',
-    color: 'pink',
-    icon: <Lock />,
-    stages: [
-      { label: 'Networking', tasks: ['TCP/IP Fundamentals', 'Network Security'] },
-      { label: 'Hardening', tasks: ['Linux Admin', 'Server Security'] },
-      { label: 'Defensive', tasks: ['SOC Fundamentals', 'Threat Hunting'] },
-      { label: 'Advanced', tasks: ['Pen Testing', 'Security Compliance'] }
-    ]
-  },
-  {
-    id: 'uxd',
-    title: 'Product Design',
-    category: 'Design',
-    color: 'cyan',
-    icon: <Layout />,
-    stages: [
-      { label: 'Research', tasks: ['User Psychology', 'Competitive Analysis'] },
-      { label: 'Visuals', tasks: ['Figma Mastery', 'Design Systems'] },
-      { label: 'Testing', tasks: ['Prototypes', 'Usability Testing'] },
-      { label: 'Strategy', tasks: ['Product Strategy', 'Handoff Workflow'] }
-    ]
-  }
-];
+export default function Roadmap() {
+  const milestones = [
+    { title: 'Technical Foundations', status: 'completed', date: 'March 2024' },
+    { title: 'Microservices Mastery', status: 'active', date: 'In Progress' },
+    { title: 'Cloud Scaling Specialist', status: 'locked', date: 'Locked' },
+    { title: 'Career-Ready Architect', status: 'locked', date: 'Final Goal' }
+  ];
 
-export default function CareerRoadmap() {
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 text-primary-600">
-             <div className="p-2 bg-primary-100 rounded-lg">
-                <BrainCircuit className="w-5 h-5" />
-             </div>
-             <span className="text-[10px] uppercase font-black tracking-[0.4em]">AI Powered Insights</span>
+    <div className="space-y-12 animate-in fade-in duration-700 font-sans pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-1">
+             <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
+             <span className="text-[11px] font-bold uppercase tracking-wide text-primary-600">Evolution Path</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-display text-slate-950">
-            Strategic <span className="text-primary-600">Roadmaps</span>
-          </h1>
-          <p className="text-slate-500 text-lg font-medium max-w-2xl">
-            Architect your future with precision. Our dynamic roadmaps analyze your skills and current market demands to guide your trajectory.
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 uppercase">Technical Roadmap</h1>
+          <p className="text-slate-500 text-base">Your personalized journey from academic foundations to high-end industrial roles.</p>
         </div>
-        <Button variant="outline" className="border-slate-200 hover:bg-slate-50 h-16 px-10 rounded-2xl text-slate-900 font-bold uppercase tracking-widest text-[10px] hidden md:flex">
-          Switch Domain
+        <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-11 px-8 font-bold text-xs uppercase shadow-xl shadow-primary-600/10 border-none">
+          Update Roadmap
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Active Roadmap Visualization */}
-        <div className="lg:col-span-8 space-y-8">
-          <Card className="bg-white border-slate-200 p-12 overflow-hidden relative group shadow-sm">
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-              <Map className="w-64 h-64 text-slate-900" />
-            </div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center gap-6 mb-16">
-                 <div className="w-20 h-20 rounded-[2rem] bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-600/20">
-                    <Zap className="w-10 h-10 text-white" />
-                 </div>
-                 <div className="space-y-1">
-                    <h2 className="text-3xl font-bold tracking-tight text-slate-900">Fullstack Engineering</h2>
-                    <div className="flex items-center gap-3">
-                       <Badge className="bg-primary-50 text-primary-700 border border-primary-200 rounded-full px-4 py-1 text-[10px] font-black uppercase tracking-widest">Active Path</Badge>
-                       <span className="text-slate-400 font-bold text-sm tracking-widest uppercase">75% Complete</span>
-                    </div>
-                 </div>
-              </div>
-
-              <div className="space-y-24 relative">
-                {/* Connecting Line */}
-                <div className="absolute left-10 top-20 bottom-0 w-0.5 bg-gradient-to-b from-primary-600 via-primary-200 to-transparent" />
-                
-                {ROADMAPS[0].stages.map((stage, idx) => (
-                  <motion.div 
-                    key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="flex gap-12 relative"
-                  >
-                    <div className={`w-20 h-20 rounded-3xl flex items-center justify-center border-4 border-white z-20 transition-all duration-500 ${
-                      idx <= 2 ? 'bg-primary-600 text-white shadow-md shadow-primary-600/10' : 'bg-slate-50 text-slate-300 border-slate-100'
-                    }`}>
-                      {idx < 2 ? <Trophy className="w-8 h-8" /> : idx === 2 ? <Zap className="w-8 h-8" /> : <ChevronRight className="w-8 h-8" />}
-                    </div>
-                    <div className="flex-1 pt-2">
-                       <h3 className={`text-2xl font-bold tracking-tight mb-6 ${idx <= 2 ? 'text-slate-900' : 'text-slate-300'}`}>
-                         {stage.label}
-                       </h3>
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {stage.tasks.map((task, tidx) => (
-                            <div key={tidx} className={`p-5 rounded-2xl border transition-all ${
-                              idx < 2 ? 'bg-primary-50/50 border-primary-200' : idx === 2 ? 'bg-white border-primary-400/30 shadow-sm' : 'bg-slate-50/50 border-slate-100'
-                            }`}>
-                               <div className="flex items-center justify-between">
-                                  <span className={`text-sm font-bold ${idx <= 2 ? 'text-slate-700' : 'text-slate-300'}`}>{task}</span>
-                                  {idx < 2 && <CheckCircle className="w-4 h-4 text-primary-600" />}
-                               </div>
-                            </div>
-                          ))}
-                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Sidebar & Other Paths */}
-        <div className="lg:col-span-4 space-y-8">
-           <section className="space-y-6">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 px-4">Trending Domains</h3>
-              <div className="space-y-4">
-                 {ROADMAPS.slice(1).map((path) => (
-                   <Card key={path.id} className="bg-white border-slate-200 hover:border-primary-400 transition-all p-6 cursor-pointer group shadow-sm">
-                      <div className="flex items-center gap-5">
-                         <div className={`w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-colors text-slate-400`}>
-                            {path.icon}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-8 space-y-10">
+           <Card className="rounded-[3rem] border-slate-100 bg-white shadow-sm p-12 border-none">
+              <div className="space-y-16">
+                 {milestones.map((m, i) => (
+                   <div key={i} className="flex gap-8 group">
+                      <div className="relative flex flex-col items-center">
+                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+                           m.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                           m.status === 'active' ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20 rotate-12 scale-110' :
+                           'bg-slate-50 text-slate-300'
+                         }`}>
+                            {m.status === 'completed' ? <CheckCircle2 className="w-6 h-6" /> :
+                             m.status === 'active' ? <Compass className="w-6 h-6 animate-spin-slow" /> :
+                             <Lock className="w-6 h-6" />}
                          </div>
-                         <div className="flex-1">
-                            <h4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{path.title}</h4>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Strategic Path</p>
-                         </div>
-                         <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-primary-600 transition-all transform group-hover:translate-x-1" />
+                         {i < milestones.length - 1 && (
+                           <div className={`w-0.5 h-20 my-2 rounded-full ${m.status === 'completed' ? 'bg-emerald-100' : 'bg-slate-50'}`} />
+                         )}
                       </div>
-                   </Card>
+                      <div className="pt-2 flex-1">
+                         <div className="flex items-center gap-4 mb-2">
+                            <h3 className={`text-2xl font-bold uppercase tracking-tight ${m.status === 'locked' ? 'text-slate-300' : 'text-slate-900'}`}>{m.title}</h3>
+                            {m.status === 'active' && <Badge className="bg-primary-50 text-primary-600 border-none font-bold text-[9px] uppercase">Active Path</Badge>}
+                         </div>
+                         <p className={`text-sm font-bold uppercase tracking-wide ${m.status === 'completed' ? 'text-emerald-500' : 'text-slate-400'}`}>
+                           {m.date}
+                         </p>
+                         <p className="text-slate-500 mt-4 max-w-xl leading-relaxed font-medium">
+                            Complete the microservices architecture project and pass the peer-review audit to unlock the next level of your roadmap.
+                         </p>
+                      </div>
+                   </div>
                  ))}
               </div>
-           </section>
+           </Card>
+        </div>
 
-           <section className="space-y-6">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 px-4">Expert Advice</h3>
-              <Card className="border-primary-100 bg-primary-50/30 p-8 relative overflow-hidden shadow-sm">
-                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary-200/20 blur-3xl" />
-                 <p className="text-sm font-medium text-slate-600 leading-relaxed mb-6 italic">
-                   "Focus on the foundations of Cloud Infrastructure this month. We've seen a 45% increase in demand for junior engineers with AWS/Docker proficiency."
-                 </p>
-                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary-600" />
-                    <div className="space-y-0.5">
-                       <p className="text-xs font-black uppercase tracking-widest text-slate-900">AI Career Agent</p>
-                       <p className="text-[10px] text-primary-600 font-bold uppercase">Real-time Analysis</p>
+        <div className="lg:col-span-4 space-y-10">
+           <Card className="bg-slate-950 border-none rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-600/20 blur-3xl rounded-full" />
+              <div className="relative z-10 space-y-8">
+                 <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary-400 border border-white/10">
+                    <Target className="w-7 h-7" />
+                 </div>
+                 <h3 className="text-3xl font-bold tracking-tight uppercase leading-tight">Mastery Velocity</h3>
+                 <div className="space-y-4">
+                    <div className="flex justify-between text-[10px] font-bold text-white/40 uppercase tracking-wide">
+                       <span>Core Competency</span>
+                       <span className="text-primary-400">85%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                       <div className="h-full w-[85%] bg-primary-600 shadow-[0_0_20px_rgba(37,99,235,0.5)]" />
                     </div>
                  </div>
-              </Card>
-           </section>
+                 <p className="text-slate-400 font-medium text-base leading-relaxed">
+                   Based on your output velocity, you are projected to reach 'Career-Ready' status in 4 months.
+                 </p>
+                 <Button className="w-full h-14 bg-white text-slate-900 hover:bg-slate-100 rounded-xl font-bold uppercase tracking-wide text-[10px]">
+                    Technical Deep Dive
+                 </Button>
+              </div>
+           </Card>
+
+           <div className="space-y-4 px-2">
+              <h3 className="text-[10px] font-bold uppercase tracking-wide text-slate-400">Roadmap Bonuses</h3>
+              <div className="space-y-3">
+                 <div className="p-6 rounded-2xl bg-white border border-slate-100 flex items-center gap-4 group hover:border-primary-100 transition-all cursor-pointer">
+                    <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600">
+                       <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                       <p className="text-sm font-bold text-slate-950 uppercase">Gold Tier Badge</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Unlock at level 3</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function CheckCircle(props) {
-  return (
-    <svg 
-      {...props}
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="3" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
   );
 }

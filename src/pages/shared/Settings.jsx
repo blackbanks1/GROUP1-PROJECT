@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { motion } from 'motion/react';
 import { 
   Settings as SettingsIcon, 
@@ -14,98 +15,87 @@ import {
   CreditCard,
   Mail
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
-export default function Settings() {
+export default function SettingsPage() {
   const sections = [
-    { icon: <User className="w-4 h-4" />, label: 'Profile Details', sub: 'Public identity and bio' },
-    { icon: <Shield className="w-4 h-4" />, label: 'Privacy & Security', sub: 'Auth and visibility' },
-    { icon: <Bell className="w-4 h-4" />, label: 'Notifications', sub: 'Signal preferences' },
-    { icon: <Palette className="w-4 h-4" />, label: 'Appearance', sub: 'Theme and visuals' },
-    { icon: <Database className="w-4 h-4" />, label: 'Data Registry', sub: 'Manage your archives' }
+    { id: 'profile', icon: <User />, label: 'Profile Account' },
+    { id: 'security', icon: <Lock />, label: 'Auth & Security' },
+    { id: 'notifications', icon: <Bell />, label: 'Global Alerts' },
+    { id: 'billing', icon: <CreditCard />, label: 'Credits & Sponsorship' },
+    { id: 'appearance', icon: <Palette />, label: 'Interface' },
+    { id: 'privacy', icon: <Shield />, label: 'Data & Privacy' },
   ];
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-sans">
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-           <div className="p-2 bg-primary-50 rounded-lg shadow-sm border border-primary-100">
-              <SettingsIcon className="w-5 h-5 text-primary-600" />
-           </div>
-           <span className="text-[10px] uppercase font-black tracking-[0.4em] text-primary-600">Core Configuration</span>
+    <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700 font-sans pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-1">
+             <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
+             <span className="text-xs font-bold uppercase tracking-wide text-primary-600">Configuration</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Platform Settings</h1>
+          <p className="text-slate-500 text-base">Manage your identity, alerts, and system preferences.</p>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-display uppercase italic text-slate-900">
-          System <span className="text-primary-600">Settings</span>
-        </h1>
-        <p className="text-slate-500 text-lg font-medium max-w-2xl leading-relaxed">
-          Fine-tune your professional interface. Adjust your neural link preferences and security protocols.
-        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-4 space-y-4">
-           {sections.map((section, idx) => (
-             <Card key={idx} className="bg-white border-none shadow-sm hover:shadow-md transition-all p-6 cursor-pointer group rounded-[1.8rem] relative overflow-hidden">
-                <div className="absolute inset-y-0 left-0 w-1 bg-primary-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">
-                         {section.icon}
-                      </div>
-                      <div>
-                         <h4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors uppercase italic text-sm font-display">{section.label}</h4>
-                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none mt-0.5">{section.sub}</p>
-                      </div>
-                   </div>
-                   <ChevronRight className="w-4 h-4 text-slate-200 group-hover:text-primary-600 transition-all transform group-hover:translate-x-1" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-3 space-y-2">
+           {sections.map(section => (
+             <button key={section.id} onClick={() => toast.info(`Accessing ${section.label} configuration...`)} className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all group text-left">
+                <div className="p-2.5 bg-white rounded-xl border border-slate-100 text-slate-400 group-hover:text-primary-600 group-hover:border-primary-100 shadow-sm transition-all">
+                   {React.cloneElement(section.icon, { className: "w-4 h-4" })}
                 </div>
-             </Card>
+                <h4 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors uppercase text-sm">{section.label}</h4>
+             </button>
            ))}
         </div>
 
-        <div className="lg:col-span-8">
-           <Card className="bg-white border-none shadow-xl rounded-[3rem] p-12 space-y-12 relative overflow-hidden">
-              <section className="space-y-8">
-                 <h3 className="text-2xl font-bold tracking-tight font-display italic uppercase text-slate-900">Public Identity</h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Display Name</label>
-                       <Input placeholder="Alex Rivera" className="h-14 bg-slate-50 border-slate-200 rounded-2xl text-slate-900 font-medium focus-visible:ring-primary-400 transition-all shadow-sm" />
-                    </div>
-                    <div className="space-y-3">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Professional Email</label>
-                       <Input placeholder="alex@careerlink.campus" className="h-14 bg-slate-50 border-slate-200 rounded-2xl text-slate-900 font-medium focus-visible:ring-primary-400 transition-all shadow-sm" />
-                    </div>
-                    <div className="space-y-3 md:col-span-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Short Bio</label>
-                       <textarea 
-                         placeholder="Architecting future-proof digital experiences..." 
-                         className="w-full h-32 bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm transition-all"
+        <div className="lg:col-span-9 space-y-8">
+           <Card className="rounded-[2.5rem] border-slate-100 shadow-sm border-none bg-white">
+              <CardContent className="p-10 space-y-12">
+                 <section className="space-y-6">
+                    <h3 className="text-2xl font-bold tracking-tight text-slate-900">Public Identity</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <SettingItem 
+                         label="Display Name" 
+                         description="How you appear to partners"
+                         defaultChecked={true}
+                       />
+                       <SettingItem 
+                         label="Professional Bio" 
+                         description="Visible on your public profile"
+                         defaultChecked={true}
                        />
                     </div>
-                 </div>
-              </section>
+                 </section>
 
-              <section className="space-y-8 pt-12 border-t border-slate-50">
-                 <h3 className="text-2xl font-bold tracking-tight font-display italic uppercase text-slate-900">Global Signals</h3>
-                 <div className="space-y-6">
-                    <PreferenceSwitch label="Real-time Interview Alerts" description="Instant transmission of recruiter sync requests" defaultChecked />
-                    <PreferenceSwitch label="Public Profile Visibility" description="Allow verified partners to discover your roadmap" defaultChecked />
-                    <PreferenceSwitch label="Collaborative Mode" description="Allow other students to see your active projects" />
-                 </div>
-              </section>
-
-              <div className="flex justify-end gap-4 pt-12">
-                 <Button variant="ghost" className="h-12 px-8 rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50 font-semibold text-sm">
-                    Reset Defaults
-                 </Button>
-                 <Button className="bg-primary-600 hover:bg-primary-700 h-12 px-8 rounded-xl font-semibold text-sm shadow-lg shadow-primary-600/10 border-none transition-all hover:scale-105 text-white">
-                    Save Changes
-                 </Button>
-              </div>
+                 <section className="space-y-6">
+                    <h3 className="text-2xl font-bold tracking-tight text-slate-900">Global Signals</h3>
+                    <div className="space-y-4">
+                       <SettingToggle 
+                         label="Activity Broadcast" 
+                         description="Notify your network about milestones"
+                         defaultChecked={true}
+                       />
+                       <SettingToggle 
+                         label="Partner Inquiries" 
+                         description="Allow companies to contact you directly"
+                         defaultChecked={true}
+                       />
+                       <SettingToggle 
+                         label="Smart Alerts" 
+                         description="Receive AI-driven career recommendations"
+                         defaultChecked={false}
+                       />
+                    </div>
+                 </section>
+              </CardContent>
            </Card>
         </div>
       </div>
@@ -113,14 +103,28 @@ export default function Settings() {
   );
 }
 
-function PreferenceSwitch({ label, description, defaultChecked = false }) {
+function SettingItem({ label, description }) {
   return (
-    <div className="flex items-center justify-between group p-2 rounded-2xl hover:bg-slate-50/50 transition-all">
-       <div className="space-y-1">
-          <h5 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors uppercase italic text-sm font-display">{label}</h5>
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">{description}</p>
+    <div onClick={() => toast.info(`Updating ${label} status...`)} className="p-6 rounded-2xl bg-slate-50/50 border border-slate-100 space-y-4 group hover:bg-white hover:border-primary-100 transition-all cursor-pointer">
+       <div className="flex justify-between items-start">
+          <div className="space-y-1">
+             <h5 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors uppercase text-sm">{label}</h5>
+             <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{description}</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary-600 transition-all" />
        </div>
-       <Switch defaultChecked={defaultChecked} className="data-[state=checked]:bg-primary-600" />
+    </div>
+  );
+}
+
+function SettingToggle({ label, description, defaultChecked }) {
+  return (
+    <div className="flex items-center justify-between p-6 rounded-2xl border border-slate-100 hover:border-primary-100 transition-all group">
+       <div className="space-y-1">
+          <h5 className="font-bold text-slate-900 group-hover:text-primary-600 transition-colors uppercase text-sm">{label}</h5>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{description}</p>
+       </div>
+       <Switch defaultChecked={defaultChecked} onCheckedChange={(val) => toast.success(`${label} ${val ? 'enabled' : 'disabled'}`)} className="data-[state=checked]:bg-primary-600" />
     </div>
   );
 }

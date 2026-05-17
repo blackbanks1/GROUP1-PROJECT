@@ -1,22 +1,31 @@
 "use client"
 
+import * as React from "react"
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
 
 import { cn } from "@/lib/utils"
 
 function Progress({
   className,
-  children,
   value,
+  max = 100,
+  children,
   ...props
 }) {
   return (
     <ProgressPrimitive.Root
       value={value}
+      max={max}
       data-slot="progress"
-      className={cn("flex flex-wrap gap-3", className)}
+      className={cn("relative h-2 w-full overflow-hidden rounded-full bg-slate-100", className)}
       {...props}
     >
+      <ProgressPrimitive.Track className="h-full w-full flex-1 bg-transparent">
+        <ProgressPrimitive.Indicator
+          className="h-full bg-primary-600 transition-all duration-500"
+          style={{ width: `${(value / max) * 100}%` }}
+        />
+      </ProgressPrimitive.Track>
       {children}
     </ProgressPrimitive.Root>
   )

@@ -1,174 +1,151 @@
+import * as React from 'react';
 import { motion } from 'motion/react';
 import { 
   Award, 
   Download, 
-  ExternalLink, 
-  ShieldCheck, 
-  Plus, 
+  Share2, 
   Search, 
-  Filter, 
-  Calendar,
+  ShieldCheck, 
+  ExternalLink,
   Zap,
-  Briefcase,
-  Share2,
-  Trash2,
-  FileBadge
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-
-const CERTIFICATES = [
-  {
-    id: '1',
-    title: 'Advanced System Architecture',
-    issuer: 'CareerLink Academy',
-    date: 'May 12, 2024',
-    type: 'Professional',
-    verifyId: 'CL-882-991',
-    status: 'Verified',
-    image: 'https://api.dicebear.com/7.x/initials/svg?seed=ASA'
-  },
-  {
-    id: '2',
-    title: 'UI Design Fundamentals',
-    issuer: 'Google Design',
-    date: 'April 28, 2024',
-    type: 'Specialization',
-    verifyId: 'G-DF-4422',
-    status: 'Verified',
-    image: 'https://api.dicebear.com/7.x/initials/svg?seed=GDF'
-  },
-  {
-    id: '3',
-    title: 'AWS Cloud Practitioner',
-    issuer: 'Amazon Web Services',
-    date: 'March 15, 2024',
-    type: 'Industry Certification',
-    verifyId: 'AWS-CP-1029',
-    status: 'Verified',
-    image: 'https://api.dicebear.com/7.x/initials/svg?seed=AWS'
-  }
-];
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function Certificates() {
+  const studentId = localStorage.getItem('careerlink_user_id') || 's1';
+  const [certificates, setCertificates] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    async function loadCertificates() {
+      try {
+        const data = await api.getStudentCertificates(studentId);
+        setCertificates(data);
+      } catch (error) {
+        toast.error('Failed to load certificates');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadCertificates();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 text-primary-600">
-             <div className="p-2 bg-primary-100 rounded-lg">
-                <ShieldCheck className="w-5 h-5" />
-             </div>
-             <span className="text-[10px] uppercase font-black tracking-[0.4em]">Verified Accomplishments</span>
+    <div className="space-y-12 animate-in fade-in duration-700 font-sans pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 mb-1">
+             <div className="h-0.5 w-4 bg-emerald-500 rounded-full" />
+             <span className="text-[11px] font-bold uppercase tracking-wide text-emerald-600">Verified Credentials</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-display text-slate-950">
-            My <span className="text-primary-600">Certificates</span>
-          </h1>
-          <p className="text-slate-500 text-lg font-medium max-w-2xl">
-            A secure repository of your professional validation. These certificates are dynamically linked to your profile and visible to elite recruiters.
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-           <Button className="bg-primary-600 hover:bg-primary-700 h-16 px-10 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary-600/10 text-white">
-              <Plus className="w-4 h-4 mr-3" /> Add Certificate
-           </Button>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 uppercase">Academic Achievements</h1>
+          <p className="text-slate-500 text-base">Your official industry-recognized mastery certificates.</p>
         </div>
       </div>
 
-      {/* Stats and Search */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-         <Card className="bg-primary-50 border-primary-100 p-8 flex items-center justify-between col-span-1 lg:col-span-1 shadow-sm">
-            <div>
-               <p className="text-[10px] font-black uppercase tracking-widest text-primary-600 mb-1">Total Earned</p>
-               <h3 className="text-4xl font-extrabold text-slate-900">14</h3>
-            </div>
-            <Award className="w-10 h-10 text-primary-600 opacity-20" />
-         </Card>
-         <div className="lg:col-span-3 h-24 bg-slate-50 border border-slate-200 rounded-[2.5rem] flex items-center px-8 focus-within:border-primary-400 transition-all shadow-sm">
-            <Search className="w-6 h-6 text-slate-400 mr-6" />
-            <Input 
-              placeholder="Filter by title, issuer, or verification ID..." 
-              className="bg-transparent border-none focus-visible:ring-0 text-lg font-medium placeholder:text-slate-300 text-slate-900" 
-            />
-         </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-8 space-y-6">
+           {certificates.map((cert) => (
+             <Card key={cert.id} className="bg-slate-900 border-none rounded-[2.5rem] p-10 relative overflow-hidden group hover:scale-[1.01] transition-all duration-500 shadow-2xl">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600/10 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-600/5 blur-[80px] rounded-full -translate-x-1/2 translate-y-1/2" />
+                
+                <div className="relative z-10">
+                   <div className="flex justify-between items-start mb-10">
+                      <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-primary-400 border border-white/10 group-hover:rotate-12 transition-transform duration-500">
+                         <Award className="w-8 h-8" />
+                      </div>
+                      <div className="text-right">
+                         <Badge className="bg-emerald-500 text-white border-none font-bold text-xs uppercase tracking-wide px-4 py-1.5 shadow-lg shadow-emerald-500/20">Official Credential</Badge>
+                         <p className="text-xs font-bold text-white/50 uppercase tracking-wide mt-3">ID: {cert.id.toUpperCase()}</p>
+                      </div>
+                   </div>
+
+                   <div className="space-y-6 mb-12">
+                      <h4 className="text-4xl font-bold text-white tracking-tight leading-none uppercase">{cert.className}</h4>
+                      <div className="flex items-center gap-6">
+                         <div className="space-y-1">
+                            <p className="text-xs font-bold text-white/50 uppercase tracking-wide">Final Grade</p>
+                            <p className="text-3xl font-bold text-primary-400">{cert.grade}</p>
+                         </div>
+                         <div className="w-px h-10 bg-white/10" />
+                         <div className="space-y-1">
+                            <p className="text-xs font-bold text-white/50 uppercase tracking-wide">Lecturer</p>
+                            <p className="text-base font-bold text-white uppercase tracking-tight">{cert.lecturerName}</p>
+                         </div>
+                         <div className="w-px h-10 bg-white/10" />
+                         <div className="space-y-1">
+                            <p className="text-xs font-bold text-white/50 uppercase tracking-wide">Issued</p>
+                            <p className="text-base font-bold text-white uppercase tracking-tight">{cert.issuedDate}</p>
+                         </div>
+                      </div>
+                   </div>
+
+                   <div className="pt-8 border-t border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                         <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400 border border-white/10">
+                            <ShieldCheck className="w-5 h-5" />
+                         </div>
+                         <span className="text-xs font-bold uppercase tracking-wide text-white/60">Institutional Verification Active</span>
+                      </div>
+                      <Button variant="ghost" className="text-primary-400 hover:text-white hover:bg-white/5 font-bold uppercase tracking-wide text-xs gap-2 rounded-xl">
+                         <Download className="w-4 h-4" />
+                         Secure Download
+                      </Button>
+                   </div>
+                </div>
+             </Card>
+           ))}
+
+           {certificates.length === 0 && (
+             <div className="p-20 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center text-center bg-slate-50/20">
+                <Award className="w-12 h-12 text-slate-300 mb-4" />
+                <h4 className="font-bold text-xl text-slate-900 uppercase">No Credentials Yet</h4>
+                <p className="text-sm text-slate-600 font-bold uppercase tracking-wide mt-2 max-w-xs leading-relaxed">Complete your course activities with excellence to unlock institutional certificates.</p>
+             </div>
+           )}
+        </div>
+
+        <div className="lg:col-span-4 space-y-8">
+           <Card className="bg-white border-slate-100 rounded-3xl p-8 shadow-sm">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8 px-2">Skill Breakdown</h3>
+              <div className="space-y-8">
+                 <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 shadow-sm">
+                       <Zap className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Skill Units</p>
+                       <h4 className="text-3xl font-bold text-slate-950 leading-none">{certificates.length * 15}</h4>
+                    </div>
+                 </div>
+                 <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shadow-sm">
+                       <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Badges Earned</p>
+                       <h4 className="text-3xl font-bold text-slate-950 leading-none">{certificates.length + 2}</h4>
+                    </div>
+                 </div>
+              </div>
+           </Card>
+        </div>
       </div>
-
-      {/* Certificates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {CERTIFICATES.map((cert, idx) => (
-          <motion.div
-            key={cert.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-          >
-            <Card className="bg-white border-slate-200 group hover:border-primary-400 transition-all overflow-hidden flex flex-col rounded-[2.5rem] shadow-sm hover:shadow-md">
-               <div className="aspect-[16/10] bg-slate-50 p-12 relative overflow-hidden flex items-center justify-center border-b border-slate-100">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent pointer-events-none" />
-                  <div className="relative z-10 text-center space-y-4">
-                     <FileBadge className="w-16 h-16 text-primary-600 mx-auto opacity-20" />
-                     <h4 className="text-xl font-bold text-slate-900 font-display italic leading-tight">{cert.title}</h4>
-                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Credential Validation</p>
-                  </div>
-                  <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-                     <div className="space-y-0.5">
-                        <p className="text-[7px] font-black uppercase tracking-tighter text-slate-300">Authorized By</p>
-                        <p className="text-[9px] font-bold text-slate-600">{cert.issuer}</p>
-                     </div>
-                     <div className="w-12 h-12 rounded-full border-4 border-primary-100 flex items-center justify-center bg-white shadow-sm">
-                        <ShieldCheck className="w-6 h-6 text-primary-600" />
-                     </div>
-                  </div>
-               </div>
-               <CardContent className="p-8 space-y-8 flex-1 flex flex-col">
-                  <div className="space-y-4 flex-1">
-                     <div className="flex items-center justify-between">
-                        <Badge className="bg-primary-50 text-primary-600 border border-primary-100 font-black text-[9px] uppercase tracking-widest px-3 py-1">
-                           {cert.type}
-                        </Badge>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{cert.date}</span>
-                     </div>
-                     <h3 className="text-2xl font-bold tracking-tight text-slate-900 group-hover:text-primary-600 transition-colors uppercase italic">{cert.title}</h3>
-                     <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Verify ID:</span>
-                        <code className="text-[10px] font-bold text-primary-600 tracking-wider">{cert.verifyId}</code>
-                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                     <Button variant="outline" className="border-slate-200 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-xl h-12 text-[10px] font-black uppercase tracking-widest transition-all bg-white">
-                        <Download className="w-4 h-4 mr-2" /> Download
-                     </Button>
-                     <Button variant="outline" className="border-slate-200 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl h-12 text-[10px] font-black uppercase tracking-widest transition-all bg-white">
-                        <Share2 className="w-4 h-4 mr-2" /> Share
-                     </Button>
-                  </div>
-               </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Verification Tool Box */}
-      <Card className="bg-slate-900 p-12 overflow-hidden relative rounded-[3rem] shadow-xl">
-         <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
-            <ShieldCheck className="w-48 h-48 text-white" />
-         </div>
-         <div className="flex flex-col lg:flex-row items-center gap-16 relative z-10">
-            <div className="space-y-4">
-               <h3 className="text-3xl font-bold tracking-tight font-display italic uppercase text-white">Verification Engine</h3>
-               <p className="text-slate-400 text-sm font-medium max-w-lg">
-                  Third-party organizations can verify your achievements instantly using our secure hashing system. Keep your profile public for automated recruiter credential checks.
-               </p>
-            </div>
-            <div className="flex-1 w-full max-w-md">
-               <Input placeholder="Enter Verify ID to test..." className="h-16 bg-white/10 border-white/10 rounded-2xl mb-4 text-center font-bold tracking-widest uppercase text-xs text-white placeholder:text-slate-500 focus:border-primary-400 transition-all" />
-               <Button className="w-full h-16 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary-600/20">Verify Credential</Button>
-            </div>
-         </div>
-      </Card>
     </div>
   );
 }

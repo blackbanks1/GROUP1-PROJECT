@@ -1,94 +1,111 @@
+import * as React from 'react';
 import { motion } from 'motion/react';
 import { 
-  HelpCircle, 
   Search, 
+  Book, 
   MessageCircle, 
-  FileText, 
-  Video, 
   Zap, 
-  ArrowRight,
-  ExternalLink,
+  ChevronRight, 
+  HelpCircle,
+  Shield,
   LifeBuoy,
-  Book,
-  ShieldQuestion
+  FileText,
+  Mail,
+  ArrowRight
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
-export default function HelpCenter() {
+export default function HelpCenterPage() {
   const categories = [
-    { icon: <FileText />, title: 'Documentation', count: '45 Guides' },
-    { icon: <Video />, title: 'Tutorials', count: '12 Classes' },
-    { icon: <ShieldQuestion />, title: 'FAQs', count: '80 Answers' },
-    { icon: <MessageCircle />, title: 'Direct Support', count: '24/7 Active' }
+    { title: 'Technical Mastery', icon: <Zap /> },
+    { title: 'Ecosystem Credits', icon: <Shield /> },
+    { title: 'Partner Disputes', icon: <LifeBuoy /> },
+    { title: 'Global Directory', icon: <Search /> },
+  ];
+
+  const faqs = [
+    'How do I verify my industry certifications?',
+    'What are ecosystem credits and how to earn them?',
+    'Connecting with top-tier technical mentors',
+    'Dispute resolution for internship projects'
   ];
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-sans">
-      <div className="flex flex-col items-center text-center space-y-8 max-w-4xl mx-auto py-12">
-        <div className="flex items-center gap-3">
-           <div className="p-3 bg-primary-50 rounded-2xl shadow-sm border border-primary-100">
-              <LifeBuoy className="w-8 h-8 text-primary-600" />
-           </div>
-           <span className="text-[12px] uppercase font-black tracking-[0.5em] text-primary-600">Support Terminal</span>
-        </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter font-display leading-[1.1] italic text-slate-900">
-          How can we <br /> <span className="text-primary-600 uppercase">Assist</span> your journey?
+    <div className="max-w-6xl mx-auto space-y-16 animate-in fade-in duration-700 font-sans pb-20">
+      {/* Search Hero */}
+      <div className="text-center space-y-8 pt-12">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1]">
+          Ecosystem <span className="text-primary-600">Support</span>
         </h1>
-        <div className="w-full relative group max-w-2xl">
-           <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-300 group-focus-within:text-primary-600 transition-colors" />
-           <Input 
-             placeholder="Search for solutions, documentation, or technical guides..." 
-             className="h-20 bg-white border-slate-100 shadow-xl rounded-[2.5rem] pl-20 text-xl font-medium focus-visible:ring-primary-400 placeholder:text-slate-200 transition-all" 
-           />
+        <p className="text-slate-500 text-xl font-normal max-w-xl mx-auto leading-relaxed">
+           Find technical specifications, platform guidance, and professional dispute resolution.
+        </p>
+        <div className="relative max-w-2xl mx-auto">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-300" />
+          <Input 
+            placeholder="Search the knowledge base..." 
+            className="h-16 pl-16 rounded-2xl bg-white border-slate-100 shadow-2xl shadow-primary-600/5 text-lg border-none ring-1 ring-slate-100 focus-visible:ring-primary-600/20"
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-         {categories.map((cat, idx) => (
-           <Card key={idx} className="bg-white border-none shadow-sm hover:shadow-md transition-all group p-10 flex flex-col items-center text-center gap-6 rounded-[3rem] cursor-pointer relative overflow-hidden">
-              <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-16 h-16 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-600 group-hover:text-white group-hover:rotate-12 transition-all relative z-10 shadow-sm">
-                 {cat.icon}
-              </div>
-              <div className="space-y-1 relative z-10">
-                 <h4 className="text-xl font-bold italic uppercase tracking-tight text-slate-900 font-display">{cat.title}</h4>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">{cat.count}</p>
-              </div>
-           </Card>
-         ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {categories.map((cat, i) => (
+          <Card key={i} onClick={() => toast.info(`Loading ${cat.title} documentation...`)} className="group hover:border-primary-100 transition-all cursor-pointer rounded-[2rem] bg-white border-slate-50 shadow-sm border-none">
+             <CardContent className="p-8 text-center space-y-6">
+                <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-600 group-hover:text-white transition-all mx-auto shadow-sm">
+                   {React.cloneElement(cat.icon, { className: "w-6 h-6" })}
+                </div>
+                <h4 className="text-xl font-bold uppercase tracking-tight text-slate-900">{cat.title}</h4>
+             </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 py-12">
-         <section className="space-y-8">
-            <h3 className="text-3xl font-bold italic uppercase font-display border-b border-slate-100 pb-6 text-slate-900">Solutions Hub</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-12 border-t border-slate-100">
+         <div className="lg:col-span-8 space-y-10">
+            <h3 className="text-3xl font-bold uppercase border-b border-slate-100 pb-6 text-slate-900">Solutions Hub</h3>
             <div className="space-y-4">
-               {['How to optimize your resume for AI?', 'Setting up your first internship meeting', 'Verifying certificates from external partners', 'Connecting with verified mentors'].map((q, i) => (
-                 <Card key={i} className="bg-white border-slate-50 hover:border-slate-100 transition-all p-6 group cursor-pointer flex items-center justify-between rounded-2xl shadow-sm border">
-                    <span className="text-sm font-bold text-slate-500 group-hover:text-primary-600 transition-colors capitalize italic font-display">{q}</span>
-                    <ArrowRight className="w-5 h-5 text-slate-200 group-hover:text-primary-600 transform group-hover:translate-x-1 transition-all" />
-                 </Card>
+               {faqs.map((q, i) => (
+                 <div key={i} onClick={() => toast.info(`Opening guide: ${q}`)} className="flex items-center justify-between p-6 rounded-2xl border border-slate-50 hover:bg-slate-50/50 transition-all group cursor-pointer">
+                    <span className="text-sm font-bold text-slate-500 group-hover:text-primary-600 transition-colors capitalize">{q}</span>
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-primary-600 transition-all" />
+                 </div>
                ))}
             </div>
-         </section>
+         </div>
 
-         <Card className="bg-primary-50 border-none p-16 rounded-[4rem] relative overflow-hidden flex flex-col items-center justify-center text-center gap-10 shadow-sm">
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent" />
-            <div className="relative z-10 space-y-8 w-full max-w-sm">
-               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-primary-200 relative">
-                  <div className="absolute inset-0 rounded-full border-4 border-primary-600/10 animate-ping" />
-                  <MessageCircle className="w-12 h-12 text-primary-600 relative z-10" />
+         <div className="lg:col-span-4 space-y-8">
+            <Card className="bg-slate-900 border-none rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary-600/20 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
+               <div className="relative z-10 space-y-8">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary-400 border border-white/10">
+                     <MessageCircle className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-4xl font-bold tracking-tight uppercase text-white">Live Support</h3>
+                  <p className="text-slate-400 font-medium text-lg leading-relaxed">
+                    Our technical support agents are active 24/7 for emergency ecosystem inquiries.
+                  </p>
+                  <Button onClick={() => toast.success('Connecting to elite support agent...')} className="w-full h-14 bg-primary-600 text-white hover:bg-primary-700 rounded-2xl font-bold uppercase tracking-wide text-xs shadow-xl shadow-primary-600/20 border-none">
+                     Initiate Chat
+                  </Button>
                </div>
-               <div className="space-y-3">
-                  <h3 className="text-4xl font-bold tracking-tight italic uppercase font-display text-slate-900">Live Support</h3>
-                  <p className="text-slate-400 text-xs font-black uppercase tracking-[0.2em] max-w-xs mx-auto leading-relaxed">Average response interval: 2.5 minutes</p>
+            </Card>
+
+            <div className="p-8 rounded-[2rem] bg-slate-50 space-y-6">
+               <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-slate-400" />
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Global Support</span>
                </div>
-               <Button className="bg-primary-600 hover:bg-primary-700 h-16 w-full rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary-600/10 border-none transition-all hover:scale-105 text-white">
-                  Open Direct Channel
+               <p className="text-sm font-bold text-slate-900">support@careerlink.edu</p>
+               <Button variant="link" onClick={() => toast.info('Generating support ticket...')} className="p-0 h-auto text-primary-600 font-bold text-xs uppercase tracking-wide flex items-center gap-2 group">
+                  Submit Support Ticket <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-all" />
                </Button>
             </div>
-         </Card>
+         </div>
       </div>
     </div>
   );

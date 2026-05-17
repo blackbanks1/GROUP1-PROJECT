@@ -6,7 +6,7 @@ import { Zap, ArrowRight, Github, Chrome, Linkedin, Eye, EyeOff } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
@@ -16,24 +16,26 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSimulateLogin = (role) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem('careerlink_role', role);
-      toast.success(`Logged in as ${role}`);
-      navigate(`/${role}/dashboard`);
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email || password) {
+    if (!email || !password) {
       toast.error('Please enter your credentials');
       return;
     }
-    // Defaulting to student for direct login simulation
-    handleSimulateLogin('student');
+
+    setIsLoading(true);
+    try {
+      const user = await api.login(email, password);
+      localStorage.setItem('careerlink_role', user.role);
+      localStorage.setItem('careerlink_user_id', user.id);
+      
+      toast.success(`Welcome back, ${user.name}`);
+      navigate(`/${user.role}/dashboard`);
+    } catch (error) {
+      toast.error(error.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,7 +47,7 @@ export default function LoginPage() {
         {/* Animated Orbs */}
         <motion.div 
           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 8, repeat }}
+          transition={{ duration: 8, repeat: Infinity }}
           className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary-100 blur-[120px] rounded-full" 
         />
 
@@ -107,27 +109,27 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2 text-center md:text-left">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-950">Sign In</h1>
-              <p className="text-slate-500 font-normal">Continue your professional journey with CareerLink.</p>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900 uppercase">Sign In</h1>
+              <p className="text-slate-500 font-medium">Continue your professional journey with CareerLink.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
              <div className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Email address</Label>
+                  <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">Email address</Label>
                   <Input 
                     id="email" 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@university.edu" 
-                    className="bg-slate-50 border-slate-200 rounded-2xl h-14 focus-visible:ring-primary-400 transition-all placeholder:text-slate-300 text-slate-900 font-medium shadow-sm" 
+                    className="bg-slate-50 border-slate-200 rounded-xl h-12 focus-visible:ring-primary-500/20 text-slate-900" 
                   />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between px-1">
-                    <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-slate-400">Password</Label>
-                    <a href="#" className="text-xs text-primary-600 hover:text-primary-700 font-semibold">Forgot Password?</a>
+                    <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-400">Password</Label>
+                    <a href="#" className="text-xs text-primary-600 hover:text-primary-700 font-bold">Forgot Password?</a>
                   </div>
                   <div className="relative">
                     <Input 
@@ -135,11 +137,11 @@ export default function LoginPage() {
                       type={showPassword ? 'text' : 'password'} 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="bg-slate-50 border-slate-200 rounded-2xl h-14 focus-visible:ring-primary-400 transition-all pr-12 text-slate-900 font-medium shadow-sm" 
+                      className="bg-slate-50 border-slate-200 rounded-xl h-12 focus-visible:ring-primary-500/20 text-slate-900" 
                     />
                     <button 
                       type="button"
-                      onClick={() => setShowPassword(showPassword)}
+                      onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -151,7 +153,7 @@ export default function LoginPage() {
              <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white rounded-2xl h-14 text-sm font-semibold group shadow-xl shadow-primary-600/10 border-none relative overflow-hidden"
+                className="w-full bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-12 text-sm font-bold shadow-lg shadow-primary-600/10 border-none uppercase"
              >
                 <AnimatePresence mode="wait">
                   {isLoading ? (
@@ -173,8 +175,8 @@ export default function LoginPage() {
                       exit={{ opacity: 0 }}
                       className="flex items-center gap-2"
                     >
-                      Sign In to Platform
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      Sign In
+                      <ArrowRight className="w-4 h-4" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -186,41 +188,26 @@ export default function LoginPage() {
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-slate-100"></span>
                 </div>
-                <div className="relative flex justify-center text-xs font-semibold uppercase tracking-wider">
-                  <span className="bg-white px-4 text-slate-300">Or Continue With</span>
+                <div className="relative flex justify-center text-[10px] font-bold uppercase">
+                  <span className="bg-white px-4 text-slate-300">Social Connect</span>
                 </div>
              </div>
 
              <div className="grid grid-cols-3 gap-4">
-                <Button variant="outline" className="bg-white hover:bg-slate-50 rounded-2xl h-14 border border-slate-200 shadow-sm text-slate-500 hover:text-slate-900 transition-all overflow-hidden group">
-                   <Chrome className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Button variant="outline" className="bg-white border-slate-200 rounded-xl h-12 text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+                   <Chrome className="w-5 h-5" />
                 </Button>
-                <Button variant="outline" className="bg-white hover:bg-slate-50 rounded-2xl h-14 border border-slate-200 shadow-sm text-slate-500 hover:text-slate-900 transition-all overflow-hidden group">
-                   <Linkedin className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Button variant="outline" className="bg-white border-slate-200 rounded-xl h-12 text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+                   <Linkedin className="w-5 h-5" />
                 </Button>
-                <Button variant="outline" className="bg-white hover:bg-slate-50 rounded-2xl h-14 border border-slate-200 shadow-sm text-slate-500 hover:text-slate-900 transition-all overflow-hidden group">
-                   <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Button variant="outline" className="bg-white border-slate-200 rounded-xl h-12 text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+                   <Github className="w-5 h-5" />
                 </Button>
              </div>
           </div>
 
-          <div className="pt-8 border-t border-slate-100">
-             <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-4">Quick Simulation (Dev Mode)</p>
-             <div className="flex flex-wrap gap-2">
-                {['student', 'company', 'lecturer', 'admin'].map(role => (
-                  <button 
-                    key={role}
-                    onClick={() => handleSimulateLogin(role)}
-                    className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-400 hover:bg-primary-50 hover:border-primary-200 hover:text-primary-600 transition-all shadow-sm active:scale-95"
-                  >
-                    {role}
-                  </button>
-                ))}
-             </div>
-          </div>
-
-          <p className="text-center text-slate-500 text-sm font-normal">
-              New to the ecosystem? <Link to="/register" className="text-primary-600 hover:text-primary-700 font-semibold underline underline-offset-4">Create an account</Link>
+          <p className="text-center text-slate-500 text-sm font-medium">
+              New to the ecosystem? <Link to="/register" className="text-primary-600 hover:text-primary-700 font-bold">Create an account</Link>
           </p>
         </div>
       </div>

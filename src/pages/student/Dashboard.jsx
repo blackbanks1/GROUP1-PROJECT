@@ -19,191 +19,211 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  MOCK_CLASSES, 
-  MOCK_GROUPS, 
-  MOCK_ACTIVITIES, 
-  MOCK_USERS 
-} from '@/mocks';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { api } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
-  const currentUser = MOCK_USERS[0]; // Alex Johnson
-  
-  // Find the student's group and class
-  const myGroup = MOCK_GROUPS.find(g => g.students.some(s => s.name === currentUser.name));
-  const myClass = MOCK_CLASSES.find(c => c.id === myGroup?.classId);
-  const myActivities = MOCK_ACTIVITIES.filter(a => a.groupId === myGroup?.id);
+  const [currentUser, setCurrentUser] = React.useState(null);
+  const [group, setGroup] = React.useState(null);
+  const [activities, setActivities] = React.useState([]);
+  const [applications, setApplications] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const userId = localStorage.getItem('careerlink_user_id') || 's1';
+        const [userData, groupData, appsData] = await Promise.all([
+          api.getUser(userId),
+          api.getStudentGroup(userId),
+          api.getApplications()
+        ]);
+        
+        setCurrentUser(userData);
+        setGroup(groupData);
+        setApplications(appsData.filter(a => a.studentId === userId));
+        
+        const acts = await api.getGroupActivities(groupData.id);
+        setActivities(acts);
+      } catch (error) {
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadDashboard();
+  }, []);
+
+  const handleAction = (action) => {
+    toast.info(`Action initiated: ${action}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const myClass = group?.classInfo;
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-sans pb-20">
+    <div className="space-y-8 animate-in fade-in duration-700 font-sans pb-20">
       {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-100">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-100">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-             <div className="h-px w-6 bg-primary-600" />
-             <span className="text-xs font-semibold uppercase tracking-wider text-primary-600">Student Terminal</span>
+          <div className="flex items-center gap-2 mb-1">
+             <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
+             <span className="text-xs font-bold uppercase tracking-wide text-primary-600">Student Portal</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-950">
-            Welcome back, <span className="text-primary-600">{currentUser.name.split(' ')[0]}</span>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 uppercase">
+            Welcome, {currentUser?.name.split(' ')[0]}
           </h1>
-          <p className="text-slate-500 text-lg font-normal">Your academic and professional progress is <span className="text-primary-600 font-semibold italic">on track</span>.</p>
+          <p className="text-slate-600 text-base font-normal">Your academic and professional progress is on track.</p>
         </div>
         <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => navigate('/student/career')} className="text-slate-500 border-slate-200 hover:bg-slate-50 rounded-xl h-11 px-6 font-semibold text-sm transition-all bg-white shadow-sm">
-                Career Pipeline
+            <Button variant="outline" onClick={() => navigate('/student/career')} className="text-slate-600 border-slate-200 hover:bg-slate-50 rounded-lg h-10 px-5 font-medium text-sm transition-all bg-white uppercase">
+                Career Hub
             </Button>
-            <Button onClick={() => navigate(`/profile/${currentUser.id}`)} className="bg-primary-600 hover:bg-primary-700 text-white rounded-xl h-11 px-6 font-semibold text-sm shadow-lg shadow-primary-600/10 border-none transition-all hover:scale-105">
+            <Button onClick={() => navigate(`/profile/${currentUser.id}`)} className="bg-primary-600 hover:bg-primary-700 text-white rounded-lg h-10 px-5 font-medium text-sm shadow-md shadow-primary-600/10 border-none transition-all uppercase">
                 My Profile
             </Button>
         </div>
       </div>
 
-      {/* Primary Context Card (Class & Group) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 bg-slate-900 border-none rounded-[2.5rem] overflow-hidden shadow-2xl relative group">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
-           <CardContent className="p-10 relative z-10 flex flex-col h-full justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2 bg-slate-900 border-none rounded-2xl overflow-hidden shadow-xl relative group">
+           <CardContent className="p-8 relative z-10 flex flex-col h-full justify-between">
               <div>
                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-primary-400">
-                       <LayoutGrid className="w-6 h-6" />
+                    <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-primary-400">
+                       <LayoutGrid className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Current Class</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">Current Course</span>
                  </div>
-                 <h2 className="text-4xl font-bold text-white tracking-tight mb-2">{myClass?.name}</h2>
-                 <p className="text-primary-400 font-bold uppercase tracking-widest text-xs mb-8">{myClass?.code} &bull; Lectured by Dr. Sarah Smith</p>
+                 <h2 className="text-3xl font-bold text-white tracking-tight mb-2 uppercase">{myClass?.name}</h2>
+                 <p className="text-primary-400 font-bold text-sm mb-8 uppercase tracking-wide">{myClass?.code} &bull; {myClass?.lecturerName}</p>
                  
-                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 w-fit">
-                    <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white">
-                       <Trophy className="w-5 h-5" />
+                 <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 w-fit">
+                    <div className="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center text-white">
+                       <Trophy className="w-4 h-4" />
                     </div>
                     <div>
-                       <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-none mb-1">Assigned Group</p>
-                       <p className="font-bold text-white text-sm">{myGroup?.name}</p>
+                       <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-0.5">Assigned Group</p>
+                       <p className="font-bold text-white text-sm uppercase">{group?.name}</p>
                     </div>
                  </div>
               </div>
 
-              <div className="mt-12 flex items-center gap-6">
-                 <div className="flex -space-x-3">
-                    {myGroup?.students.map((student, i) => (
-                      <Avatar key={i} className="border-2 border-slate-900 w-10 h-10">
-                        <AvatarFallback className="text-[10px] font-bold bg-slate-800 text-white">{student.name[0]}</AvatarFallback>
+              <div className="mt-12 flex items-center gap-4">
+                 <div className="flex -space-x-2">
+                    {group?.members.map((student, i) => (
+                      <Avatar key={i} className="border-2 border-slate-900 w-8 h-8">
+                        <AvatarImage src={student.avatar} />
+                        <AvatarFallback className="text-xs font-bold bg-slate-800 text-white">{student.name[0]}</AvatarFallback>
                       </Avatar>
                     ))}
                  </div>
-                 <p className="text-xs font-bold text-white/60">You & {myGroup?.students.length - 1} others in this group</p>
+                 <p className="text-xs font-bold text-white/70 uppercase">You & {group?.members.length - 1} team members</p>
               </div>
            </CardContent>
         </Card>
 
-        {/* Quick Progress Mini Card */}
-        <Card className="bg-white border-slate-100 shadow-xl rounded-[2.5rem] p-10 flex flex-col justify-between group hover:border-primary-100 transition-all">
+        <Card className="bg-white border-slate-100 shadow-sm rounded-2xl p-8 flex flex-col justify-between hover:border-primary-100 transition-all">
            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                 <div className="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center">
-                    <Target className="w-6 h-6" />
+                 <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
+                    <Target className="w-5 h-5" />
                  </div>
-                 <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold text-[10px] uppercase">On Schedule</Badge>
+                 <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold text-xs uppercase">Active</Badge>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Academic Achievement</h3>
-              <p className="text-sm text-slate-400 font-medium">You have completed <span className="text-primary-600 font-bold">4/6</span> core tasks for this semester.</p>
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Achievement</h3>
+                <p className="text-sm text-slate-600 font-semibold uppercase">Course progress tracking active.</p>
+              </div>
            </div>
            
-           <div className="space-y-3">
-              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+           <div className="space-y-2.5">
+              <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
                  <span>Course Completion</span>
-                 <span>72%</span>
+                 <span className="text-primary-600">{myClass?.progress}%</span>
               </div>
-              <Progress value={72} className="h-2 rounded-full bg-slate-50" />
+              <Progress value={myClass?.progress} className="h-1.5" />
            </div>
         </Card>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        
-        {/* My Activities Column */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-6">
-           <div className="flex items-center justify-between px-2">
-              <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3 tracking-tight">
-                 <Activity className="w-6 h-6 text-primary-600" />
-                 My Assigned Tasks
+           <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 tracking-tight uppercase">
+                 <Activity className="w-5 h-5 text-primary-600" />
+                 Active Tasks
               </h2>
-              <Button variant="link" className="text-primary-600 text-[10px] font-bold uppercase tracking-widest">View Full Syllabus</Button>
+              <Button variant="link" onClick={() => handleAction('Viewing Syllabus')} className="text-primary-600 text-xs font-bold p-0 uppercase">View Syllabus</Button>
            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {myActivities.map((activity, idx) => (
-                <Card key={idx} className="bg-white border-slate-100 hover:border-primary-200 transition-all duration-300 rounded-3xl group/task cursor-pointer">
+              {activities.map((activity, idx) => (
+                <Card key={idx} onClick={() => handleAction(`Opening ${activity.name}`)} className="bg-white border-slate-100 hover:border-primary-200 transition-all rounded-xl cursor-pointer shadow-sm">
                    <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-6">
-                         <div className="w-10 h-10 rounded-2xl bg-slate-50 text-slate-400 group-hover/task:bg-primary-600 group-hover/task:text-white transition-all flex items-center justify-center">
-                            <CheckCircle2 className="w-5 h-5" />
+                         <div className="w-9 h-9 rounded-lg bg-slate-50 text-slate-500 flex items-center justify-center">
+                            <CheckCircle2 className="w-4.5 h-4.5" />
                          </div>
-                         <Badge variant="outline" className="border-slate-100 text-slate-400 text-[9px] font-bold uppercase tracking-widest">{activity.dueDate}</Badge>
+                         <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{activity.dueDate}</span>
                       </div>
-                      <h4 className="font-bold text-slate-900 group-hover/task:text-primary-600 transition-colors mb-4">{activity.name}</h4>
-                      <div className="space-y-3">
-                         <div className="flex justify-between text-[10px] font-bold text-slate-400">
-                            <span>Activity Progress</span>
-                            <span>{activity.progress}%</span>
+                      <h4 className="font-bold text-slate-900 mb-4 uppercase text-sm">{activity.name}</h4>
+                      <div className="space-y-2">
+                         <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
+                            <span>Progress</span>
+                            <span className="text-slate-700">{activity.progress}%</span>
                          </div>
-                         <Progress value={activity.progress} className="h-1.5 rounded-full bg-slate-50" />
+                         <Progress value={activity.progress} className="h-1" />
                       </div>
                    </CardContent>
                 </Card>
               ))}
+              {activities.length === 0 && (
+                <div className="col-span-2 py-10 text-center border-2 border-dashed border-slate-100 rounded-xl">
+                   <p className="text-sm font-bold text-slate-400 uppercase">No active tasks assigned</p>
+                </div>
+              )}
            </div>
         </div>
 
-        {/* Sidebar Features Column */}
         <div className="lg:col-span-4 space-y-8">
-           {/* Career Snapshot */}
-           <div className="space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-2">Career Pipeline</h3>
-              <Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm group hover:border-primary-100 transition-all">
-                 <div className="flex items-center gap-4 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
-                       <Briefcase className="w-5 h-5" />
+           <div className="space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 px-2">Career Pipeline</h3>
+              <Card className="bg-white border-slate-100 rounded-2xl p-6 shadow-sm hover:border-primary-100 transition-all">
+                 <div className="flex items-center gap-3 mb-6">
+                    <div className="w-9 h-9 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
+                       <Briefcase className="w-4.5 h-4.5" />
                     </div>
                     <div>
-                       <p className="text-sm font-bold text-slate-900">Google UI Intern</p>
-                       <p className="text-[10px] font-bold text-violet-600 uppercase tracking-widest">Interview Stage</p>
+                       <p className="text-sm font-bold text-slate-900 uppercase">
+                         {applications.length > 0 ? 'Active Applications' : 'Market Ready'}
+                       </p>
+                       <p className="text-xs font-bold text-violet-600 uppercase tracking-wider">
+                         {applications.length} submitted
+                       </p>
                     </div>
                  </div>
-                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 mb-6">
+                 <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 mb-6">
                     <div className="flex items-center gap-2">
-                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                       <span className="text-[10px] font-bold text-slate-600">May 20, 10:00 AM</span>
+                       <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                       <span className="text-xs font-bold text-slate-600 uppercase tracking-tight">Check Marketplace</span>
                     </div>
-                    <ChevronRight className="w-3 h-3 text-slate-300" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                  </div>
-                 <Button onClick={() => navigate('/student/career')} variant="ghost" className="w-full text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary-600 transition-colors">
-                    Access Career Hub
+                 <Button onClick={() => navigate('/student/applications')} variant="ghost" className="w-full text-xs font-bold text-slate-500 hover:text-primary-600 uppercase">
+                    Open Marketplace
                  </Button>
               </Card>
-           </div>
-
-           {/* Learning Resources */}
-           <div className="space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-2">Skill Roadmap</h3>
-              <div className="space-y-3">
-                 {[
-                   { label: 'React Architecture', time: '12h left', color: 'bg-primary-500' },
-                   { label: 'Advanced UI Design', time: 'Completed', color: 'bg-emerald-500' },
-                 ].map((resource, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-white hover:border-primary-100 transition-all cursor-pointer group">
-                       <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${resource.color}`} />
-                          <span className="text-xs font-bold text-slate-700 group-hover:text-primary-600 transition-colors">{resource.label}</span>
-                       </div>
-                       <span className="text-[10px] font-bold text-slate-300">{resource.time}</span>
-                    </div>
-                 ))}
-              </div>
            </div>
         </div>
       </div>
