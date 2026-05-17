@@ -97,10 +97,16 @@ export default function DashboardLayout() {
         setCurrentUser(user);
         
         if (user.role === 'student') {
-          const group = await api.getStudentGroup(user.id);
-          setGroupData(group);
-          const acts = await api.getGroupActivities(group.id);
-          setActivities(acts);
+          try {
+            const group = await api.getStudentGroup(user.id);
+            setGroupData(group);
+            const acts = await api.getGroupActivities(group.id);
+            setActivities(acts);
+          } catch (groupError) {
+            console.log('Student not yet assigned to a group');
+            setGroupData(null);
+            setActivities([]);
+          }
         }
       } catch (error) {
         console.error('Failed to load user data', error);
@@ -221,7 +227,8 @@ export default function DashboardLayout() {
           <button 
             onClick={() => {
                 localStorage.removeItem('careerlink_role');
-                navigate('/');
+                localStorage.removeItem('careerlink_user_id');
+                navigate('/', { replace: true });
             }} 
             className="w-full flex items-center gap-3 px-2 py-2 mt-2 text-slate-500 hover:text-red-600 transition-all rounded-lg text-sm font-bold uppercase tracking-wide group"
           >

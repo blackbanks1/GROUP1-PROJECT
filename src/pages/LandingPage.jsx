@@ -14,16 +14,17 @@ import {
 export default function LandingPage() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedRole = localStorage.getItem('careerlink_role');
-    if (savedRole) {
-      navigate(`/${savedRole}/dashboard`);
-    }
-  }, [navigate]);
-
   const handleRoleSelection = (role) => {
-    localStorage.setItem('careerlink_role', role.toLowerCase());
-    navigate(`/${role.toLowerCase()}/dashboard`);
+    // If already signed in, go straight to the CURRENT user's dashboard regardless of which card was clicked
+    const signedInId = localStorage.getItem('careerlink_user_id');
+    const savedRole = localStorage.getItem('careerlink_role');
+
+    if (signedInId && savedRole) {
+      navigate(`/${savedRole}/dashboard`);
+    } else {
+      // If not signed in, force login to the clicked role's context
+      navigate('/login');
+    }
   };
 
   return (
@@ -89,7 +90,7 @@ export default function LandingPage() {
               title="Find Talent"
               desc="Provide industrial training and discover verified professional talent."
               icon={<Building2 className="w-8 h-8" />}
-              accent="dark"
+              accent="primary"
               onClick={() => handleRoleSelection('company')}
             />
             <RoleCard 

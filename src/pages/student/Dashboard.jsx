@@ -36,18 +36,24 @@ export default function StudentDashboard() {
     async function loadDashboard() {
       try {
         const userId = localStorage.getItem('careerlink_user_id') || 's1';
-        const [userData, groupData, appsData] = await Promise.all([
+        const [userData, appsData] = await Promise.all([
           api.getUser(userId),
-          api.getStudentGroup(userId),
           api.getApplications()
         ]);
-        
+
         setCurrentUser(userData);
-        setGroup(groupData);
         setApplications(appsData.filter(a => a.studentId === userId));
-        
-        const acts = await api.getGroupActivities(groupData.id);
-        setActivities(acts);
+
+        try {
+          const groupData = await api.getStudentGroup(userId);
+          setGroup(groupData);
+          const acts = await api.getGroupActivities(groupData.id);
+          setActivities(acts);
+        } catch (groupError) {
+          console.log('Student not yet assigned to a group');
+          setGroup(null);
+          setActivities([]);
+        }
       } catch (error) {
         toast.error('Failed to load dashboard data');
       } finally {
@@ -56,7 +62,6 @@ export default function StudentDashboard() {
     }
     loadDashboard();
   }, []);
-
   const handleAction = (action) => {
     toast.info(`Action initiated: ${action}`);
   };

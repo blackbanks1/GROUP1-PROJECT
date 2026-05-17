@@ -12,16 +12,19 @@ import {
   Building2,
   Calendar,
   Zap,
-  ArrowUpRight
+  ArrowUpRight,
+  ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/api';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function Applications() {
+  const navigate = useNavigate();
   const studentId = localStorage.getItem('careerlink_user_id') || 's1';
   const [internships, setInternships] = React.useState([]);
   const [myApplications, setMyApplications] = React.useState([]);
@@ -79,6 +82,12 @@ export default function Applications() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-slate-100">
         <div className="space-y-2">
+          <button 
+            onClick={() => navigate('/student/dashboard')}
+            className="text-primary-600 hover:text-primary-700 font-bold text-[10px] uppercase flex items-center mb-4 transition-all hover:-translate-x-1"
+          >
+             <ArrowLeft className="w-3 h-3 mr-1" /> Back to Dashboard
+          </button>
           <div className="flex items-center gap-2 mb-1">
              <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
              <span className="text-[11px] font-bold uppercase tracking-wide text-primary-600">Career Pipeline</span>

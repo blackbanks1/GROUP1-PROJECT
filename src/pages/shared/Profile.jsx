@@ -39,21 +39,26 @@ export default function ProfilePage() {
   const [user, setUser] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
-  const [editData, setEditData] = React.useState({ bio: '', github: '', name: '' });
+  const [editData, setEditData] = React.useState({ bio: '', github: '', linkedin: '', name: '' });
   const fileInputRef = React.useRef(null);
 
   // Use current user from local storage or default to first mock user for permissions check
   const savedRole = localStorage.getItem('careerlink_role') || 'student';
-  const loggedInUser = MOCK_USERS.find(u => u.role === savedRole) || MOCK_USERS[0];
-  const isOwnProfile = loggedInUser.id === id || (!id && loggedInUser.id === 's1');
+  const loggedInUserId = localStorage.getItem('careerlink_user_id');
+  const isOwnProfile = !id || loggedInUserId === id;
 
   React.useEffect(() => {
     async function fetchUser() {
       try {
-        const userId = id || localStorage.getItem('careerlink_user_id') || 's1';
+        const userId = id || loggedInUserId || 's1';
         const userData = await api.getUser(userId);
         setUser(userData);
-        setEditData({ bio: userData.bio || '', github: userData.github || '', name: userData.name });
+        setEditData({ 
+          bio: userData.bio || '', 
+          github: userData.github || '', 
+          linkedin: userData.linkedin || '',
+          name: userData.name 
+        });
       } catch (error) {
         toast.error('Failed to load profile');
       } finally {
@@ -61,7 +66,7 @@ export default function ProfilePage() {
       }
     }
     fetchUser();
-  }, [id]);
+  }, [id, loggedInUserId]);
 
   const handleUpdateProfile = async () => {
     try {
@@ -193,12 +198,20 @@ export default function ProfilePage() {
               <div className="flex flex-wrap items-center gap-6 mb-8">
                 <div className="flex items-center gap-2 text-slate-600 text-sm font-bold uppercase tracking-tight">
                   <GraduationCap className="w-4 h-4 text-primary-600" />
-                  <span>University of Tech</span>
+                  <span>{user.school || 'Institutional Education'}</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-600 text-sm font-bold uppercase tracking-tight">
-                  <MapPin className="w-4 h-4 text-primary-600" />
-                  <span>San Francisco, CA</span>
-                </div>
+                {user.location && (
+                  <div className="flex items-center gap-2 text-slate-600 text-sm font-bold uppercase tracking-tight">
+                    <MapPin className="w-4 h-4 text-primary-600" />
+                    <span>{user.location}</span>
+                  </div>
+                )}
+                {user.role === 'student' && user.level && (
+                  <div className="flex items-center gap-2 text-slate-600 text-sm font-bold uppercase tracking-tight">
+                    <Briefcase className="w-4 h-4 text-primary-600" />
+                    <span>{user.level} &bull; {user.course}</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-4">
@@ -206,10 +219,11 @@ export default function ProfilePage() {
                   variant="outline" 
                   onClick={() => {
                     if (user.github) {
-                      window.open(`https://${user.github.replace('https://', '')}`, '_blank');
+                      const url = user.github.startsWith('http') ? user.github : `https://${user.github}`;
+                      window.open(url, '_blank');
                     } else if (isOwnProfile) {
                       setIsEditing(true);
-                      toast.info('Please enter your GitHub handle in the edit field.');
+                      toast.info('Update your professional links in the edit fields.');
                     }
                   }} 
                   className={`bg-white border-slate-200 hover:bg-slate-50 rounded-2xl h-14 px-10 text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${!user.github && isOwnProfile ? 'text-primary-600 border-primary-200' : 'text-slate-600 hover:text-slate-900'}`}
@@ -217,7 +231,26 @@ export default function ProfilePage() {
                   {!user.github && isOwnProfile ? (
                     <><Plus className="w-4 h-4 mr-2" /> Connect GitHub</>
                   ) : (
-                    <>Follow Link</>
+                    <>GitHub Portfolio</>
+                  )}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    if (user.linkedin) {
+                      const url = user.linkedin.startsWith('http') ? user.linkedin : `https://${user.linkedin}`;
+                      window.open(url, '_blank');
+                    } else if (isOwnProfile) {
+                      setIsEditing(true);
+                      toast.info('Update your professional links in the edit fields.');
+                    }
+                  }} 
+                  className={`bg-white border-slate-200 hover:bg-slate-50 rounded-2xl h-14 px-10 text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${!user.linkedin && isOwnProfile ? 'text-primary-600 border-primary-200' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  {!user.linkedin && isOwnProfile ? (
+                    <><Plus className="w-4 h-4 mr-2" /> Connect LinkedIn</>
+                  ) : (
+                    <>LinkedIn Portfolio</>
                   )}
                 </Button>
                 <Button className="bg-primary-600 hover:bg-primary-700 text-white rounded-2xl h-14 px-10 text-xs font-bold uppercase tracking-wide shadow-xl shadow-primary-600/10 border-none group transition-all hover:scale-105">
@@ -241,7 +274,7 @@ export default function ProfilePage() {
                         />
                       ) : (
                         <p className="text-base text-slate-700 leading-relaxed font-medium">
-                          "{user.bio || 'Architecting high-performance digital systems and forging the next generation of professional talent with cutting-edge expertise.'}"
+                          "{user.bio || 'Developing professional excellence and forging the next generation of industry talent with cutting-edge academic growth.'}"
                         </p>
                       )}
                    </Card>
@@ -256,27 +289,50 @@ export default function ProfilePage() {
                         </div>
                         <span className="truncate">{user.email}</span>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-slate-600 font-bold hover:text-primary-600 transition-all group cursor-pointer w-full">
-                        <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-slate-900 group-hover:text-white transition-all shadow-sm border border-slate-100">
-                           <Github className="w-4 h-4" />
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-4 text-sm text-slate-600 font-bold hover:text-primary-600 transition-all group cursor-pointer w-full">
+                          <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-slate-900 group-hover:text-white transition-all shadow-sm border border-slate-100">
+                            <Github className="w-4 h-4" />
+                          </div>
+                          {isEditing ? (
+                            <Input 
+                              value={editData.github}
+                              onChange={(e) => setEditData({...editData, github: e.target.value})}
+                              placeholder="github.com/username"
+                              className="bg-slate-50 border-slate-100 h-10 flex-1"
+                            />
+                          ) : (
+                            <span onClick={() => {
+                              if (user.github) {
+                                const url = user.github.startsWith('http') ? user.github : `https://${user.github}`;
+                                window.open(url, '_blank');
+                              }
+                            }}>{user.github || 'github.com/professional'}</span>
+                          )}
                         </div>
-                        {isEditing ? (
-                          <Input 
-                            value={editData.github}
-                            onChange={(e) => setEditData({...editData, github: e.target.value})}
-                            placeholder="github.com/username"
-                            className="bg-slate-50 border-slate-100 h-10 flex-1"
-                          />
-                        ) : (
-                          <span onClick={() => window.open(`https://${user.github || 'github.com'}`, '_blank')}>{user.github || 'github.com/professional'}</span>
-                        )}
+
+                        <div className="flex items-center gap-4 text-sm text-slate-600 font-bold hover:text-primary-600 transition-all group cursor-pointer w-full">
+                          <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-[#0077b5] group-hover:text-white transition-all shadow-sm border border-slate-100">
+                            <Linkedin className="w-4 h-4" />
+                          </div>
+                          {isEditing ? (
+                            <Input 
+                              value={editData.linkedin}
+                              onChange={(e) => setEditData({...editData, linkedin: e.target.value})}
+                              placeholder="linkedin.com/in/username"
+                              className="bg-slate-50 border-slate-100 h-10 flex-1"
+                            />
+                          ) : (
+                            <span onClick={() => {
+                              if (user.linkedin) {
+                                const url = user.linkedin.startsWith('http') ? user.linkedin : `https://${user.linkedin}`;
+                                window.open(url, '_blank');
+                              }
+                            }}>{user.linkedin || 'linkedin.com/in/leader'}</span>
+                          )}
+                        </div>
                       </div>
-                      <a href="#" className="flex items-center gap-4 text-sm text-slate-600 font-bold hover:text-primary-600 transition-all group">
-                        <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-[#0077b5] group-hover:text-white transition-all shadow-sm border border-slate-100">
-                           <Linkedin className="w-4 h-4" />
-                        </div>
-                        linkedin.com/in/leader
-                      </a>
                    </div>
                 </div>
              </div>

@@ -32,6 +32,7 @@ import Saved from '@/pages/student/Saved';
 
 // Company Pages
 import CompanyDashboard from '@/pages/company/Dashboard';
+import CompanyApplicants from '@/pages/company/Dashboard'; // Using dashboard as placeholder if dedicated page doesn't exist, but checking file structure...
 
 // Lecturer Pages
 import LecturerDashboard from '@/pages/lecturer/Dashboard';
@@ -85,6 +86,7 @@ export default function App() {
             
             {/* Other Roles Dashboards */}
             <Route path="/company/dashboard" element={<CompanyDashboard />} />
+            <Route path="/company/applicants" element={<CompanyDashboard />} />
             <Route path="/lecturer/dashboard" element={<LecturerDashboard />} />
             <Route path="/lecturer/students" element={<LecturerStudents />} />
             <Route path="/lecturer/reports" element={<LecturerReports />} />

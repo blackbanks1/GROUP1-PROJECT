@@ -17,9 +17,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_USERS, MOCK_POSTS } from '@/mocks';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 export default function FeedPage() {
+  const userId = localStorage.getItem('careerlink_user_id');
+  const [currentUser, setCurrentUser] = React.useState(null);
+  
+  React.useEffect(() => {
+    if (userId) {
+      api.getUser(userId).then(setCurrentUser).catch(() => {});
+    }
+  }, [userId]);
+
   const trends = [
     { tag: '#CloudMastery', count: '1.2k' },
     { tag: '#AITraining', count: '850' },
@@ -43,8 +53,8 @@ export default function FeedPage() {
           <CardContent className="p-8">
             <div className="flex gap-4">
               <Avatar className="w-12 h-12 border border-slate-100">
-                <AvatarImage src={MOCK_USERS[0].avatar} />
-                <AvatarFallback>{MOCK_USERS[0].name[0]}</AvatarFallback>
+                <AvatarImage src={currentUser?.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=User'} />
+                <AvatarFallback>{currentUser?.name?.[0] || 'U'}</AvatarFallback>
               </Avatar>
               <div className="flex-1 space-y-4">
                 <textarea 
@@ -71,7 +81,7 @@ export default function FeedPage() {
 
         {/* Feed Posts */}
         <div className="space-y-6">
-          {MOCK_POSTS.map((post) => (
+          {MOCK_POSTS.length > 0 ? MOCK_POSTS.map((post) => (
             <Card key={post.id} className="rounded-[2.5rem] border-slate-100 bg-white shadow-sm hover:border-primary-100 transition-all border-none">
               <CardHeader className="p-8 pb-0">
                 <div className="flex items-center justify-between">
@@ -123,7 +133,13 @@ export default function FeedPage() {
                 </div>
               </CardFooter>
             </Card>
-          ))}
+          )) : (
+            <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[3rem] bg-slate-50/20">
+               <Sparkles className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+               <h4 className="font-bold text-slate-900 uppercase">Your Feed is Quiet</h4>
+               <p className="text-slate-500 text-sm font-medium uppercase mt-2">Connect with peers to start seeing professional updates.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -150,7 +166,7 @@ export default function FeedPage() {
           <div className="space-y-6">
              <h3 className="font-bold text-xs uppercase text-slate-600 tracking-wider">Elite Networkers</h3>
              <div className="space-y-6">
-                {MOCK_USERS.slice(1, 4).map((user) => (
+                {MOCK_USERS.length > 0 ? MOCK_USERS.slice(0, 3).map((user) => (
                   <div key={user.id} className="flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10 border border-slate-100 shadow-sm">
@@ -166,7 +182,9 @@ export default function FeedPage() {
                       <UserPlus className="w-4.5 h-4.5" />
                     </Button>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">No recommendations available</p>
+                )}
              </div>
              <Button onClick={() => handleAction('Generating custom recommendations...')} className="w-full bg-slate-900 hover:bg-slate-50 border-none text-white hover:text-slate-900 rounded-xl h-10 text-xs font-bold uppercase transition-all">
                View Recommended

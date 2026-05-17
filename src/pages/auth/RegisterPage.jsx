@@ -28,12 +28,21 @@ export default function RegisterPage() {
   const [selectedRole, setSelectedRole] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Auto-redirect if already logged in
+  React.useEffect(() => {
+    const signedInId = localStorage.getItem('careerlink_user_id');
+    const savedRole = localStorage.getItem('careerlink_role');
+    if (signedInId && savedRole) {
+      navigate(`/${savedRole}/dashboard`);
+    }
+  }, [navigate]);
+
   // Form State
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    university: '',
+    school: '',
     course: '',
     major: '',
     level: '',
@@ -51,6 +60,8 @@ export default function RegisterPage() {
     { id: 'lecturer', icon: <Users className="w-8 h-8" />, label: 'Lecturer', desc: 'Supervising student growth and bridging academia with industry.', color: 'border-primary-100 text-primary-600 bg-primary-50' },
     { id: 'admin', icon: <ShieldCheck className="w-8 h-8" />, label: 'Admin', desc: 'Managing the ecosystem and ensuring platform security.', color: 'border-primary-100 text-primary-600 bg-primary-50' },
   ];
+
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleNextStep = async () => {
     if (step === 'role' && !selectedRole) {
@@ -80,7 +91,12 @@ export default function RegisterPage() {
         localStorage.setItem('careerlink_user_id', user.id);
         
         setStep('complete');
-        toast.success('Registration successful! Welcome to CareerLink.');
+        toast.success('Registration successful! Redirecting...');
+        
+        // Instant redirect to dashboard
+        setTimeout(() => {
+          navigate(`/${user.role}/dashboard`);
+        }, 1500);
       } catch (error) {
         toast.error(error.message || 'Registration failed');
       } finally {
@@ -235,11 +251,11 @@ export default function RegisterPage() {
                       {selectedRole === 'student' && (
                         <div className="space-y-6">
                            <div className="space-y-2">
-                             <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">University</Label>
+                             <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">School</Label>
                              <Input 
-                               value={formData.university}
-                               onChange={(e) => setFormData({...formData, university: e.target.value})}
-                               placeholder="Harvard University" 
+                               value={formData.school}
+                               onChange={(e) => setFormData({...formData, school: e.target.value})}
+                               placeholder="e.g. University of Tech" 
                                className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-medium placeholder:text-slate-300 shadow-sm" 
                              />
                            </div>
@@ -390,11 +406,11 @@ export default function RegisterPage() {
 
                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                     <Button 
-                      onClick={() => navigate('/login')}
+                      onClick={() => navigate(`/${localStorage.getItem('careerlink_role')}/dashboard`)}
                       size="lg" 
                       className="h-14 px-10 text-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 rounded-full shadow-xl shadow-primary-600/20 border-none uppercase"
                     >
-                       Go to Login
+                       Enter Dashboard
                     </Button>
                     <Link to="/">
                        <Button variant="ghost" size="lg" className="h-14 px-10 text-sm font-semibold text-slate-400 hover:text-slate-950 hover:bg-slate-50 rounded-full uppercase">

@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   Zap,
   Award,
-  Globe
+  Globe,
+  ArrowLeft
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,8 +23,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { MOCK_OPPORTUNITIES } from '@/mocks';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export default function CareerHub() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleApply = (title) => {
@@ -35,6 +38,12 @@ export default function CareerHub() {
       {/* Search & Filter Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-slate-100">
         <div className="space-y-2">
+          <button 
+            onClick={() => navigate('/student/dashboard')}
+            className="text-primary-600 hover:text-primary-700 font-bold text-[10px] uppercase flex items-center mb-4 transition-all hover:-translate-x-1"
+          >
+             <ArrowLeft className="w-3 h-3 mr-1" /> Back to Dashboard
+          </button>
           <div className="flex items-center gap-2 mb-1">
              <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
              <span className="text-xs font-bold uppercase tracking-wide text-primary-600">Talent Marketplace</span>

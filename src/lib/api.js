@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 export async function fetchApi(endpoint, options = {}) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -19,9 +19,9 @@ export async function fetchApi(endpoint, options = {}) {
 
 export const api = {
   // Auth
-  login: (email, password) => fetchApi('/auth/login', {
+  login: (email, password, role) => fetchApi('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, role }),
   }),
   signup: (userData) => fetchApi('/auth/signup', {
     method: 'POST',
@@ -49,8 +49,18 @@ export const api = {
   }),
 
   // Lecturer
-  getLecturerClasses: (lecturerId) => fetchApi(`/lecturer/${lecturerId}/classes`),
+  getLecturerSelectedClasses: (lecturerId) => fetchApi(`/lecturer/${lecturerId}/selected-classes`),
+  updateLecturerSelectedClasses: (lecturerId, classIds) => fetchApi(`/lecturer/${lecturerId}/selected-classes`, {
+    method: 'POST',
+    body: JSON.stringify({ classIds }),
+  }),
+  getLecturerAvailableClasses: (lecturerId) => fetchApi(`/lecturer/${lecturerId}/available-classes`),
+  getClassStudents: (classId) => fetchApi(`/class/${classId}/students`),
   getClassGroups: (classId) => fetchApi(`/class/${classId}/groups`),
+  createGroup: (data) => fetchApi('/groups', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
   getLecturerReports: (lecturerId) => fetchApi(`/lecturer/${lecturerId}/reports`),
   postReport: (data) => fetchApi('/reports', {
     method: 'POST',

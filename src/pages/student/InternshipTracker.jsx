@@ -123,8 +123,7 @@ export default function InternshipTracker() {
                   </Avatar>
                   <div>
                      <p className="text-sm font-bold text-slate-900">Dr. Sarah Smith</p>
-                     <p className="text-[10px] font-bold text-primary-600 uppercase tracking-wide">University Lead Supervisor</p>
-                  </div>
+                     <p className="text-[10px] font-bold text-primary-600 uppercase tracking-wide">School Lead Supervisor</p>                  </div>
                </div>
             </div>
          </Card>

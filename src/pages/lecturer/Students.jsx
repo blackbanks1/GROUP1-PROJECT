@@ -9,7 +9,8 @@ import {
   GraduationCap,
   BadgeCheck,
   Clock,
-  ArrowUpRight
+  ArrowUpRight,
+  ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,10 +18,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { api } from '@/lib/api';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function LecturerStudents() {
-  const lecturerId = 'l1';
+  const navigate = useNavigate();
+  const lecturerId = localStorage.getItem('careerlink_user_id') || 'l1';
   const [students, setStudents] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -28,11 +31,14 @@ export default function LecturerStudents() {
   React.useEffect(() => {
     async function loadStudents() {
       try {
-        const classes = await api.getLecturerClasses(lecturerId);
+        const classes = await api.getLecturerAvailableClasses(lecturerId);
         if (classes.length > 0) {
-          const groups = await api.getClassGroups(classes[0].id);
-          const allStudents = groups.flatMap(g => g.members);
-          // Unique students
+          // Fetch students from all available classes
+          const allStudentsPromises = classes.map(c => api.getClassStudents(c.id));
+          const studentsArrays = await Promise.all(allStudentsPromises);
+          const allStudents = studentsArrays.flat();
+          
+          // Unique students by ID
           const uniqueStudents = Array.from(new Map(allStudents.map(s => [s.id, s])).values());
           setStudents(uniqueStudents);
         }
@@ -61,6 +67,12 @@ export default function LecturerStudents() {
     <div className="space-y-10 animate-in fade-in duration-700 font-sans pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-slate-100">
         <div className="space-y-1">
+          <button 
+            onClick={() => navigate('/lecturer/dashboard')}
+            className="text-primary-600 hover:text-primary-700 font-bold text-[10px] uppercase flex items-center mb-4 transition-all hover:-translate-x-1"
+          >
+             <ArrowLeft className="w-3 h-3 mr-1" /> Back to Dashboard
+          </button>
           <div className="flex items-center gap-2 mb-1">
              <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
              <span className="text-[11px] font-bold uppercase tracking-wide text-primary-600">Student Directory</span>

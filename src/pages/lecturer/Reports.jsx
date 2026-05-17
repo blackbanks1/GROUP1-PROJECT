@@ -11,7 +11,8 @@ import {
   Target,
   Trophy,
   Activity,
-  ArrowUpRight
+  ArrowUpRight,
+  ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,15 +21,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { api } from '@/lib/api';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function LecturerReports() {
-  const lecturerId = 'l1';
+  const navigate = useNavigate();
+  const lecturerId = localStorage.getItem('careerlink_user_id') || 'l1';
   const [reports, setReports] = React.useState([]);
   const [students, setStudents] = React.useState([]);
   const [classes, setClasses] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
-  
+
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [newReport, setNewReport] = React.useState({ studentId: '', classId: '', grade: 'A', status: 'Finalized' });
 
@@ -37,11 +40,11 @@ export default function LecturerReports() {
       try {
         const [reportsData, classesData] = await Promise.all([
           api.getLecturerReports(lecturerId),
-          api.getLecturerClasses(lecturerId)
+          api.getLecturerAvailableClasses(lecturerId)
         ]);
         setReports(reportsData);
         setClasses(classesData);
-        
+
         if (classesData.length > 0) {
           const groups = await api.getClassGroups(classesData[0].id);
           const allStudents = groups.flatMap(g => g.members);
@@ -56,7 +59,6 @@ export default function LecturerReports() {
     }
     loadReportsData();
   }, []);
-
   const handleCreateReport = async (e) => {
     e.preventDefault();
     if (!newReport.studentId || !newReport.classId) return toast.error('Please select student and class');
@@ -92,6 +94,12 @@ export default function LecturerReports() {
     <div className="space-y-10 animate-in fade-in duration-700 font-sans pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-slate-100">
         <div className="space-y-1">
+          <button 
+            onClick={() => navigate('/lecturer/dashboard')}
+            className="text-primary-600 hover:text-primary-700 font-bold text-[10px] uppercase flex items-center mb-4 transition-all hover:-translate-x-1"
+          >
+             <ArrowLeft className="w-3 h-3 mr-1" /> Back to Dashboard
+          </button>
           <div className="flex items-center gap-2 mb-1">
              <div className="h-0.5 w-4 bg-primary-600 rounded-full" />
              <span className="text-[11px] font-bold uppercase tracking-wide text-primary-600">Academic Records</span>
